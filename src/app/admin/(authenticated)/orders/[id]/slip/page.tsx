@@ -71,8 +71,8 @@ export default async function OrderSlipPage({
             />
             <div>
               <h1 
-                className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight leading-none text-[#C24869]"
-                style={{ color: "#C24869", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}
+                className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight leading-none text-[#1A3C34] print:text-[#1A3C34]"
+                style={{ color: "#1A3C34", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}
               >
                 Pink Farm
               </h1>

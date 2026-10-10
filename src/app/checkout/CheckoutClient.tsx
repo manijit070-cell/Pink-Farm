@@ -25,10 +25,13 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 export function CheckoutClient() {
   const { items, clearCart } = useCartStore();
   const router = useRouter();
+  const deliveryFeeSetting = useSettingsStore((state) => state.deliveryFee);
+  const freeDeliveryThreshold = useSettingsStore((state) => state.freeDeliveryThreshold);
+  const isAcceptingOrders = useSettingsStore((state) => state.isAcceptingOrders);
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
-
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
@@ -54,10 +57,6 @@ export function CheckoutClient() {
     router.push("/cart");
     return null;
   }
-
-  const deliveryFeeSetting = useSettingsStore((state) => state.deliveryFee);
-  const freeDeliveryThreshold = useSettingsStore((state) => state.freeDeliveryThreshold);
-  const isAcceptingOrders = useSettingsStore((state) => state.isAcceptingOrders);
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const isFreeDelivery = freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold;

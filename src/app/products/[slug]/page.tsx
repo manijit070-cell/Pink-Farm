@@ -6,6 +6,8 @@ import { AddToCart } from "./AddToCart";
 import { ChevronRight } from "lucide-react";
 import { FadeIn, HoverCard, GlowPulse } from "@/components/ui/MotionWrappers";
 
+export const instant = false;
+
 export default async function ProductDetailPage({
   params,
 }: {

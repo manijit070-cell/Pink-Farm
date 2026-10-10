@@ -3,6 +3,8 @@ import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { AdminProductsTable } from "./AdminProductsTable";
 
+export const instant = false;
+
 export default async function AdminProductsPage() {
   let products: any[] = [];
   try {

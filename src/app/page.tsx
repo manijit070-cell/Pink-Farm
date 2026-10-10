@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/MotionWrappers";
 import { formatPrice } from "@/lib/utils";
 
+export const instant = false;
+
 export default async function Home() {
   let products = [];
   try {

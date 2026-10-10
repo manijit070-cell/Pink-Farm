@@ -6,6 +6,8 @@ export const metadata = {
   title: "Checkout | Pink Farm",
 };
 
+export const instant = false;
+
 export default function CheckoutPage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">

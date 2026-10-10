@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Product {
+  id               String           @id @default(uuid())
+  name             String
+  slug             String           @unique
+  shortDescription String
+  description      String
+  imageUrl         String
+  additionalImages String           @default("[]")
+  basePrice        Int              // In paise (1 INR = 100 paise)
+  originalPrice    Int?             // In paise
+  sku              String           @unique
+  category         String
+  stockQuantity    Int              @default(0)
+  lowStockThreshold Int             @default(5)
+  isAvailable      Boolean          @default(true)
+  isFeatured       Boolean          @default(false)
+  tags             String           @default("[]")
+  ingredients      String?
+  nutritionalInfo  String?
+  storage          String?
+  allergens        String?
+  deliveryNotes    String?
+  seoTitle         String?
+  seoDesc          String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  variants         ProductVariant[]
+  orderItems       OrderItem[]
+}
+
+model ProductVariant {
+  id               String      @id @default(uuid())
+  productId        String
+  product          Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name             String      // e.g., "250g", "500g"
+  packSize         String
+  price            Int         // In paise
+  originalPrice    Int?        // In paise
+  stockQuantity    Int         @default(0)
+  isAvailable      Boolean     @default(true)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model Order {
+  id               String      @id @default(uuid())
+  orderNumber      String      @unique // e.g., PF-2026-00001
+  customerName     String
+  customerPhone    String
+  addressLine1     String
+  addressLine2     String?
+  city             String
+  state            String
+  pinCode          String
+  deliveryInstructions String?
+  subtotal         Int         // In paise
+  deliveryFee      Int         // In paise
+  discount         Int         @default(0)
+  totalAmount      Int         // In paise
+
+  paymentStatus    String      @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  fulfillmentStatus String     @default("PENDING") // PENDING, PROCESSING, PACKED, SHIPPED, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  items            OrderItem[]
+}
+
+model OrderItem {
+  id               String      @id @default(uuid())
+  orderId          String
+  order            Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product     @relation(fields: [productId], references: [id])
+  variantName      String?
+  quantity         Int
+  unitPrice        Int         // In paise
+  subtotal         Int         // In paise
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model StoreSettings {
+  id                  String   @id @default("default")
+  storeName           String   @default("Pink Farm")
+  announcementText    String   @default("Welcome to Pink Farm — Goodness in Every Bite.")
+  supportPhone        String   @default("+91 99999 99999")
+  supportEmail        String   @default("hello@pinkfarm.in")
+  businessAddress     String   @default("123 Pink Farm Estate, New Delhi")
+  deliveryFee         Int      @default(5000) // 50 INR in paise
+  freeDeliveryThreshold Int?   @default(50000) // 500 INR
+  isAcceptingOrders   Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Hashed
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

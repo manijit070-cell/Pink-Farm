@@ -9,6 +9,7 @@ import { Minus, Plus, Trash2, ArrowRight, Truck, CheckCircle2 } from "lucide-rea
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScaleOnTap, FadeIn, ShimmerSheen } from "@/components/ui/MotionWrappers";
+import { formatPrice } from "@/lib/utils";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem } = useCartStore();
@@ -91,7 +92,7 @@ export default function CartPage() {
                     {item.variantName && (
                       <p className="text-sm opacity-70 mt-1">Pack Size: {item.variantName}</p>
                     )}
-                    <p className="font-bold text-brand-green mt-2">₹{(item.price / 100).toFixed(2)}</p>
+                    <p className="font-bold text-brand-green mt-2">₹{formatPrice(item.price)}</p>
                   </div>
                   
                   <div className="flex items-center justify-between mt-4">
@@ -138,17 +139,17 @@ export default function CartPage() {
               <div className="space-y-4 text-sm opacity-90 mb-6 pb-6 border-b border-brand-green-light/20">
                 <div className="flex justify-between">
                   <span>Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} items)</span>
-                  <span>₹{(subtotal / 100).toFixed(2)}</span>
+                  <span>₹{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery</span>
-                  <span>{deliveryFee === 0 ? <strong className="text-emerald-600">FREE</strong> : `₹${(deliveryFee / 100).toFixed(2)}`}</span>
+                  <span>{deliveryFee === 0 ? <strong className="text-emerald-600">FREE</strong> : `₹${formatPrice(deliveryFee)}`}</span>
                 </div>
               </div>
               
               <div className="flex justify-between font-bold text-xl text-brand-green mb-8">
                 <span>Total</span>
-                <span>₹{(total / 100).toFixed(2)}</span>
+                <span>₹{formatPrice(total)}</span>
               </div>
               
               {isAcceptingOrders ? (

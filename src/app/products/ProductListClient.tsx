@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { HoverCard, SpotlightCard } from "@/components/ui/MotionWrappers";
+import { formatPrice } from "@/lib/utils";
 
 interface Product {
   id: string;
@@ -166,11 +167,11 @@ export function ProductListClient({ initialProducts }: { initialProducts: Produc
                       <p className="text-sm opacity-70 line-clamp-2 mt-1">{product.shortDescription}</p>
                       <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <p className="font-bold text-brand-green text-base">
-                          ₹{(product.basePrice / 100) % 1 === 0 ? (product.basePrice / 100).toFixed(0) : (product.basePrice / 100).toFixed(2)}
+                          ₹{formatPrice(product.basePrice)}
                         </p>
                         {product.originalPrice && product.originalPrice > product.basePrice && (
                           <span className="text-xs text-brand-charcoal/50 line-through font-medium">
-                            ₹{(product.originalPrice / 100) % 1 === 0 ? (product.originalPrice / 100).toFixed(0) : (product.originalPrice / 100).toFixed(2)}
+                            ₹{formatPrice(product.originalPrice)}
                           </span>
                         )}
                         {product.originalPrice && product.originalPrice > product.basePrice && (

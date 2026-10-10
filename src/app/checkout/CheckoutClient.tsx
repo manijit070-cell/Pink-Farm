@@ -9,6 +9,7 @@ import { useSettingsStore } from "@/store/settingsStore";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { formatPrice } from "@/lib/utils";
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
@@ -222,7 +223,7 @@ export function CheckoutClient() {
                     {item.variantName && <p className="opacity-70 text-xs">{item.variantName}</p>}
                   </div>
                 </div>
-                <span className="font-medium">₹{((item.price * item.quantity) / 100).toFixed(2)}</span>
+                <span className="font-medium">₹{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
           </div>
@@ -230,17 +231,17 @@ export function CheckoutClient() {
           <div className="space-y-3 text-sm opacity-90 mb-6 pb-6 border-b border-brand-green-light/20">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>₹{(subtotal / 100).toFixed(2)}</span>
+              <span>₹{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span>Delivery</span>
-              <span>{deliveryFee === 0 ? <strong className="text-emerald-600">FREE</strong> : `₹${(deliveryFee / 100).toFixed(2)}`}</span>
+              <span>{deliveryFee === 0 ? <strong className="text-emerald-600">FREE</strong> : `₹${formatPrice(deliveryFee)}`}</span>
             </div>
           </div>
           
           <div className="flex justify-between font-bold text-xl text-brand-green mb-6">
             <span>Total Payable</span>
-            <span>₹{(total / 100).toFixed(2)}</span>
+            <span>₹{formatPrice(total)}</span>
           </div>
 
           {error && (

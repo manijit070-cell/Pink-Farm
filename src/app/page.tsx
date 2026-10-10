@@ -14,8 +14,7 @@ import {
   GlowPulse,
   ShimmerSheen
 } from "@/components/ui/MotionWrappers";
-
-export const instant = false;
+import { formatPrice } from "@/lib/utils";
 
 export default async function Home() {
   let products = [];
@@ -228,11 +227,11 @@ export default async function Home() {
                       {/* Price & Discount */}
                       <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
                         <div className="bg-brand-green text-brand-ivory px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-transform duration-300 group-hover:scale-105">
-                          ₹{(product.basePrice / 100) % 1 === 0 ? (product.basePrice / 100).toFixed(0) : (product.basePrice / 100).toFixed(2)}
+                          ₹{formatPrice(product.basePrice)}
                         </div>
                         {product.originalPrice && product.originalPrice > product.basePrice && (
                           <span className="text-xs text-brand-charcoal/50 line-through font-medium">
-                            ₹{(product.originalPrice / 100) % 1 === 0 ? (product.originalPrice / 100).toFixed(0) : (product.originalPrice / 100).toFixed(2)}
+                            ₹{formatPrice(product.originalPrice)}
                           </span>
                         )}
                         <div className="bg-brand-cream border border-brand-green/20 text-brand-green px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wider">

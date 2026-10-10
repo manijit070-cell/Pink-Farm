@@ -2,8 +2,6 @@ import { prisma } from "@/lib/db";
 import { ProductListClient } from "./ProductListClient";
 import { FadeIn } from "@/components/ui/MotionWrappers";
 
-export const instant = false;
-
 export default async function ProductsPage() {
   let products: any[] = [];
   try {

@@ -173,7 +173,7 @@ export default async function Home() {
         </FadeIn>
 
         {products.length > 0 ? (
-          <StaggerContainer staggerDelay={0.08} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+          <StaggerContainer staggerDelay={0.16} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
             {products.slice(0, 7).map((product, index) => (
               <StaggerItem key={product.id}>
                 <HoverCard lift={-6} className="h-full">
@@ -284,7 +284,7 @@ export default async function Home() {
             </h2>
           </div>
         </FadeIn>
-        <StaggerContainer staggerDelay={0.12} className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+        <StaggerContainer staggerDelay={0.20} className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
           <StaggerItem>
             <HoverCard lift={-6} className="h-full">
               <div className="h-full bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-pink-accent/30 hover:shadow-xl transition-all duration-300">
@@ -378,7 +378,7 @@ export default async function Home() {
             <h2 className="text-center font-serif text-3xl md:text-4xl mb-16 text-brand-champagne">Simple. Secure. Satisfying.</h2>
           </FadeIn>
           
-          <StaggerContainer staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+          <StaggerContainer staggerDelay={0.22} className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
             <StaggerItem>
               <HoverCard lift={-5}>
                 <div className="flex flex-col items-center text-center gap-6 relative z-10">

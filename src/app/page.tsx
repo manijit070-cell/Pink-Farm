@@ -22,8 +22,11 @@ export default async function Home() {
   try {
     products = await prisma.product.findMany({
       where: { isAvailable: true },
-      take: 7,
-      orderBy: { isFeatured: 'desc' },
+      take: 6,
+      orderBy: [
+        { isFeatured: 'desc' },
+        { createdAt: 'asc' }
+      ],
       include: { variants: true }
     });
   } catch (error) {

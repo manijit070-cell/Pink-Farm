@@ -77,7 +77,7 @@ export default async function OrderSlipPage({
                 Pink Farm
               </h1>
               <p className="text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase text-gray-600 mt-1.5 pl-0.5">
-                Premium Makhana &amp; Wholesome Superfoods
+                Goodness in Every Bite
               </p>
             </div>
           </div>

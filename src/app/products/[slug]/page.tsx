@@ -68,7 +68,14 @@ export default async function ProductDetailPage({
         {/* Details */}
         <div className="flex-1 flex flex-col pt-4">
           <FadeIn direction="left">
-            <h1 className="font-serif text-3xl md:text-5xl text-brand-green mb-4">{product.name}</h1>
+            <h1 className="font-serif text-3xl md:text-5xl text-brand-green mb-4 leading-tight">
+              {product.name}
+              {(product.slug === "premium-raw-phool-makhana" || product.name.toLowerCase().includes("raw phool makhana")) && !product.name.includes("(Fox Nuts)") && (
+                <span className="font-serif font-normal text-2xl md:text-4xl text-brand-green/85 ml-2.5 inline-block">
+                  (Fox Nuts)
+                </span>
+              )}
+            </h1>
             <p className="text-lg text-brand-charcoal opacity-80 mb-8">
               {product.shortDescription}
             </p>

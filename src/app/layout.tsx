@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingSocials } from "@/components/ui/FloatingSocials";
+import { LuxuryScrollProgressBar } from "@/components/ui/MotionWrappers";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="antialiased min-h-screen flex flex-col bg-brand-ivory text-brand-charcoal">
+        <LuxuryScrollProgressBar />
         <Navbar />
         <main className="flex-grow">
           {children}

@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { HoverCard } from "@/components/ui/MotionWrappers";
+import { HoverCard, SpotlightCard } from "@/components/ui/MotionWrappers";
 
 interface Product {
   id: string;
@@ -144,7 +144,7 @@ export function ProductListClient({ initialProducts }: { initialProducts: Produc
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.25 }}
               >
-                <HoverCard lift={-5} className="h-full">
+                <SpotlightCard className="h-full rounded-2xl bg-white border border-brand-pink-accent/20 p-3 shadow-sm hover:shadow-lg transition-all" glowColor="rgba(42, 89, 78, 0.12)">
                   <Link href={`/products/${product.slug}`} className="group flex flex-col gap-4 h-full">
                     <div className="relative aspect-square rounded-xl overflow-hidden bg-brand-pink-accent/20">
                       {product.imageUrl ? (
@@ -153,7 +153,7 @@ export function ProductListClient({ initialProducts }: { initialProducts: Produc
                           alt={product.name}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="object-cover transition-transform duration-700 group-hover:scale-108"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center text-brand-green/30">
@@ -167,7 +167,7 @@ export function ProductListClient({ initialProducts }: { initialProducts: Produc
                       <p className="font-bold text-brand-green mt-2">₹{(product.basePrice / 100).toFixed(2)}</p>
                     </div>
                   </Link>
-                </HoverCard>
+                </SpotlightCard>
               </motion.div>
             ))}
           </motion.div>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { FadeIn, StaggerContainer, StaggerItem, HoverCard, ScaleOnTap } from "@/components/ui/MotionWrappers";
+import { FadeIn, StaggerContainer, StaggerItem, HoverCard, ScaleOnTap, SpotlightCard, GlowPulse, ShimmerSheen } from "@/components/ui/MotionWrappers";
 
 export const metadata = {
   title: "About Us — Pink Farm",
@@ -37,9 +37,11 @@ export default function AboutPage() {
           {/* Visual */}
           <div className="flex-shrink-0 relative">
             <HoverCard lift={-6}>
-              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-brand-pink to-brand-cream border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-                <span className="text-9xl select-none">👩‍💼</span>
-              </div>
+              <GlowPulse color="rgba(230, 184, 192, 0.45)">
+                <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-brand-pink to-brand-cream border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden transition-transform duration-500 hover:scale-105">
+                  <span className="text-9xl select-none">👩‍💼</span>
+                </div>
+              </GlowPulse>
             </HoverCard>
             <div className="absolute -bottom-4 -right-4 bg-brand-green text-white px-5 py-2 rounded-full font-bold text-sm shadow-lg">
               Founder & Dietitian
@@ -111,13 +113,13 @@ export default function AboutPage() {
               },
             ].map(item => (
               <StaggerItem key={item.title}>
-                <HoverCard lift={-5} className="h-full">
+                <SpotlightCard className="h-full rounded-[2rem]" glowColor="rgba(230, 184, 192, 0.2)">
                   <div className="h-full bg-white p-8 rounded-[2rem] shadow-sm border border-brand-pink-accent/30 hover:shadow-xl transition-all duration-300">
-                    <div className="w-14 h-14 bg-brand-pink rounded-full flex items-center justify-center text-2xl mb-5 shadow-inner">{item.emoji}</div>
+                    <div className="w-14 h-14 bg-brand-pink rounded-full flex items-center justify-center text-2xl mb-5 shadow-inner transition-transform duration-300 hover:rotate-6">{item.emoji}</div>
                     <h3 className="font-serif text-xl text-brand-green font-bold mb-3">{item.title}</h3>
                     <p className="text-brand-charcoal/75 text-sm leading-relaxed">{item.desc}</p>
                   </div>
-                </HoverCard>
+                </SpotlightCard>
               </StaggerItem>
             ))}
           </StaggerContainer>

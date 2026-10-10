@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AddToCart } from "./AddToCart";
 import { ChevronRight } from "lucide-react";
-import { FadeIn, HoverCard } from "@/components/ui/MotionWrappers";
+import { FadeIn, HoverCard, GlowPulse } from "@/components/ui/MotionWrappers";
 
 export const instant = false;
 
@@ -45,21 +45,23 @@ export default async function ProductDetailPage({
         {/* Images */}
         <div className="flex-1 w-full space-y-4">
           <HoverCard lift={-4}>
-            <div className="relative aspect-square md:aspect-[4/5] rounded-2xl overflow-hidden bg-brand-pink-accent/10 border border-brand-green-light/10">
-              {product.imageUrl ? (
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-brand-green/30">
-                  Main Image
-                </div>
-              )}
-            </div>
+            <GlowPulse color="rgba(230, 184, 192, 0.35)">
+              <div className="relative aspect-square md:aspect-[4/5] rounded-3xl overflow-hidden bg-brand-pink-accent/10 border border-brand-green-light/10 shadow-lg">
+                {product.imageUrl ? (
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-700 hover:scale-105"
+                    priority
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-brand-green/30">
+                    Main Image
+                  </div>
+                )}
+              </div>
+            </GlowPulse>
           </HoverCard>
         </div>
 

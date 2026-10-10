@@ -1,4 +1,4 @@
-import { FadeIn, StaggerContainer, StaggerItem, HoverCard } from "@/components/ui/MotionWrappers";
+import { FadeIn, StaggerContainer, StaggerItem, HoverCard, SpotlightCard } from "@/components/ui/MotionWrappers";
 
 export const metadata = {
   title: "Contact Us — Pink Farm",
@@ -35,7 +35,7 @@ export default function ContactPage() {
 
             {/* WhatsApp */}
             <StaggerItem>
-              <HoverCard lift={-6} className="h-full">
+              <SpotlightCard className="h-full rounded-[2rem]" glowColor="rgba(42, 89, 78, 0.12)">
                 <a
                   href="https://wa.me/918437504040"
                   target="_blank"
@@ -56,12 +56,12 @@ export default function ContactPage() {
                     Message us now →
                   </span>
                 </a>
-              </HoverCard>
+              </SpotlightCard>
             </StaggerItem>
 
             {/* Instagram */}
             <StaggerItem>
-              <HoverCard lift={-6} className="h-full">
+              <SpotlightCard className="h-full rounded-[2rem]" glowColor="rgba(42, 89, 78, 0.12)">
                 <a
                   href="https://instagram.com/pinkfarm.in"
                   target="_blank"
@@ -82,12 +82,12 @@ export default function ContactPage() {
                     Follow us →
                   </span>
                 </a>
-              </HoverCard>
+              </SpotlightCard>
             </StaggerItem>
 
             {/* YouTube */}
             <StaggerItem>
-              <HoverCard lift={-6} className="h-full">
+              <SpotlightCard className="h-full rounded-[2rem]" glowColor="rgba(42, 89, 78, 0.12)">
                 <a
                   href="https://www.youtube.com/@pinkfarm.official"
                   target="_blank"
@@ -108,7 +108,7 @@ export default function ContactPage() {
                     Watch now →
                   </span>
                 </a>
-              </HoverCard>
+              </SpotlightCard>
             </StaggerItem>
 
           </StaggerContainer>

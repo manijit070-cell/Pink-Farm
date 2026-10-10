@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // 1. FadeIn Container - Cinematic, Gentle & Slower Scroll Entrance
@@ -39,7 +39,7 @@ export function FadeIn({
       transition={{
         duration,
         delay,
-        ease: [0.22, 1, 0.36, 1], // Smooth, cinematic deceleration
+        ease: [0.22, 1, 0.36, 1],
       }}
       className={className}
     >
@@ -255,6 +255,102 @@ export function LuxuryScrollProgressBar() {
         className="h-full bg-gradient-to-r from-brand-green via-brand-pink-accent to-[#88E2B0]"
         style={{ width: `${scrollProgress}%` }}
         transition={{ ease: "easeOut", duration: 0.2 }}
+      />
+    </div>
+  );
+}
+
+// 9. Premium Spotlight Card with Mouse Follow Glow
+export function SpotlightCard({
+  children,
+  className = "",
+  glowColor = "rgba(42, 89, 78, 0.12)",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  glowColor?: string;
+}) {
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  return (
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ y: -6 }}
+      transition={{ type: "spring", stiffness: 280, damping: 24 }}
+      className={`relative overflow-hidden ${className}`}
+    >
+      {/* Dynamic Cursor Spotlight Layer */}
+      <motion.div
+        className="pointer-events-none absolute -inset-px transition-opacity duration-500 rounded-[inherit]"
+        style={{
+          background: `radial-gradient(350px circle at ${mousePos.x}px ${mousePos.y}px, ${glowColor}, transparent 80%)`,
+          opacity: isHovered ? 1 : 0,
+        }}
+      />
+      {children}
+    </motion.div>
+  );
+}
+
+// 10. Ambient Glow Pulse for Signature Elements
+export function GlowPulse({
+  children,
+  color = "rgba(136, 226, 176, 0.25)",
+  className = "",
+}: {
+  children: React.ReactNode;
+  color?: string;
+  className?: string;
+}) {
+  return (
+    <div className={`relative ${className}`}>
+      <motion.div
+        animate={{
+          opacity: [0.35, 0.7, 0.35],
+          scale: [0.97, 1.05, 0.97],
+        }}
+        transition={{
+          duration: 4.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute -inset-4 rounded-full blur-2xl pointer-events-none -z-10"
+        style={{ backgroundColor: color }}
+      />
+      {children}
+    </div>
+  );
+}
+
+// 11. Subtle Shimmer Sheen Wrapper for Buttons & CTAs
+export function ShimmerSheen({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`relative overflow-hidden group ${className}`}>
+      {children}
+      <motion.div
+        className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none skew-x-12"
+        initial={{ x: "-100%" }}
+        whileHover={{
+          x: "200%",
+          transition: { duration: 0.85, ease: "easeInOut" },
+        }}
       />
     </div>
   );

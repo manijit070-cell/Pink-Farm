@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Minus, Plus, Trash2, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ScaleOnTap, FadeIn } from "@/components/ui/MotionWrappers";
+import { ScaleOnTap, FadeIn, ShimmerSheen } from "@/components/ui/MotionWrappers";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem } = useCartStore();
@@ -135,11 +135,13 @@ export default function CartPage() {
               </div>
               
               <ScaleOnTap>
-                <Button asChild size="lg" className="w-full text-base h-14">
-                  <Link href="/checkout">
-                    Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
+                <ShimmerSheen className="rounded-md">
+                  <Button asChild size="lg" className="w-full text-base h-14">
+                    <Link href="/checkout">
+                      Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  </Button>
+                </ShimmerSheen>
               </ScaleOnTap>
               
               <div className="mt-6 text-center text-xs opacity-70 flex flex-col gap-2">

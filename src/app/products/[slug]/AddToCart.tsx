@@ -6,7 +6,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ScaleOnTap } from "@/components/ui/MotionWrappers";
+import { ScaleOnTap, ShimmerSheen } from "@/components/ui/MotionWrappers";
 
 type Product = any;
 type Variant = any;
@@ -155,17 +155,19 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
         </ScaleOnTap>
 
         <ScaleOnTap className="flex-1">
-          <Button 
-            size="lg" 
-            className="w-full px-8 h-14 text-lg bg-brand-pink text-brand-green font-bold hover:bg-brand-pink/90"
-            onClick={() => {
-              handleAddToCart();
-              router.push('/checkout');
-            }}
-            disabled={isOutOfStock}
-          >
-            Buy Now
-          </Button>
+          <ShimmerSheen className="rounded-md">
+            <Button 
+              size="lg" 
+              className="w-full px-8 h-14 text-lg bg-brand-pink text-brand-green font-bold hover:bg-brand-pink/90"
+              onClick={() => {
+                handleAddToCart();
+                router.push('/checkout');
+              }}
+              disabled={isOutOfStock}
+            >
+              Buy Now
+            </Button>
+          </ShimmerSheen>
         </ScaleOnTap>
       </div>
     </div>

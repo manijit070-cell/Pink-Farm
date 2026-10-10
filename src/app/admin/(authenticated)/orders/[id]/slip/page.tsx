@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import PrintControls from "./PrintControls";
@@ -56,15 +57,29 @@ export default async function OrderSlipPage({
       {/* The Printable Package Receipt (Amazon / Flipkart Style) */}
       <div className="bg-white border-2 border-black p-5 sm:p-7 rounded-none shadow-sm print:border-2 print:border-black print:p-5 print:shadow-none print:m-0 print:max-w-none print:break-inside-avoid text-black">
         
-        {/* Top Header: Brand + Document Title */}
-        <div className="border-b-2 border-black pb-3 mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight text-black">
-              PINK FARM
-            </h1>
-            <p className="text-[11px] font-semibold tracking-wide uppercase text-gray-600 mt-0.5">
-              Premium Makhana &amp; Wholesome Superfoods
-            </p>
+        {/* Top Header: Brand Trademark + Document Title */}
+        <div className="border-b-2 border-black pb-3 mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/lotus-logo-gold.png"
+              alt="Pink Farm Trademark Logo"
+              width={64}
+              height={64}
+              priority
+              unoptimized
+              className="w-11 h-11 sm:w-13 sm:h-13 object-contain shrink-0 drop-shadow-xs"
+            />
+            <div>
+              <h1 
+                className="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight leading-none text-[#C24869]"
+                style={{ color: "#C24869", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}
+              >
+                Pink Farm
+              </h1>
+              <p className="text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase text-gray-600 mt-1">
+                Premium Makhana &amp; Wholesome Superfoods
+              </p>
+            </div>
           </div>
           <div className="text-left sm:text-right">
             <span className="inline-block bg-black text-white font-mono font-bold text-[11px] uppercase px-2.5 py-0.5 tracking-wider">

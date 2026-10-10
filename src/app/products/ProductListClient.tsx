@@ -73,7 +73,7 @@ export function ProductListClient({ initialProducts }: { initialProducts: Produc
       
       {/* Controls Bar */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-brand-cream p-4 rounded-xl">
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center flex-wrap">
           {categories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (
@@ -95,6 +95,12 @@ export function ProductListClient({ initialProducts }: { initialProducts: Produc
               </button>
             );
           })}
+          <a
+            href="#combo-builder"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-green bg-brand-pink/70 hover:bg-brand-pink px-3 py-1 rounded-full transition-all border border-brand-pink-accent/40 hover:scale-105"
+          >
+            <span>🌸</span> Make a Combo
+          </a>
         </div>
 
         <div className="flex items-center gap-4">

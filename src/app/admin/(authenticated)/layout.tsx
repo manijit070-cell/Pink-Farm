@@ -8,9 +8,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans print:bg-white print:block">
       {/* Sidebar */}
-      <aside className="w-full md:w-56 lg:w-60 bg-white border-r border-gray-200 flex flex-col shrink-0">
+      <aside className="w-full md:w-56 lg:w-60 bg-white border-r border-gray-200 flex flex-col shrink-0 print:hidden">
         <div className="p-4 lg:p-5 border-b border-gray-100 flex items-center justify-between">
           <Link href="/admin" className="font-serif text-xl font-bold text-brand-green tracking-tight">
             Pink Farm Admin
@@ -30,7 +30,7 @@ export default function AdminLayout({
             <PackageOpen size={18} />
             <span>Products</span>
           </Link>
-          <Link href="/admin/settings" className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-brand-green bg-brand-pink/50 text-sm font-semibold transition-colors">
+          <Link href="/admin/settings" className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-brand-pink/40 hover:text-brand-green text-sm font-medium transition-colors">
             <Settings size={18} />
             <span>Store Settings</span>
           </Link>
@@ -42,7 +42,7 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+      <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto print:p-0 print:bg-white print:overflow-visible">
         {children}
       </main>
     </div>

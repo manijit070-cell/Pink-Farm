@@ -142,3 +142,36 @@ html {
   background-color: var(--color-brand-pink-accent);
   color: var(--color-brand-green);
 }
+
+@media print {
+  /* Strictly hide everything non-printable */
+  header,
+  nav,
+  footer,
+  aside,
+  .print\:hidden,
+  [aria-label="Chat on WhatsApp"],
+  [aria-label="Follow on Instagram"],
+  [class*="shadow-[0_8px_25px"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Reset body and background for printing */
+  html, body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+}
+

@@ -24,7 +24,8 @@ export async function decrypt(session: string | undefined = "") {
 }
 
 export async function getSession() {
-  const session = cookies().get("admin_session")?.value;
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session")?.value;
   if (!session) return null;
   return await decrypt(session);
 }
@@ -32,8 +33,9 @@ export async function getSession() {
 export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const session = await encrypt({ userId, expiresAt });
+  const cookieStore = await cookies();
   
-  cookies().set("admin_session", session, {
+  cookieStore.set("admin_session", session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     expires: expiresAt,
@@ -42,6 +44,7 @@ export async function createSession(userId: string) {
   });
 }
 
-export function deleteSession() {
-  cookies().delete("admin_session");
+export async function deleteSession() {
+  const cookieStore = await cookies();
+  cookieStore.delete("admin_session");
 }

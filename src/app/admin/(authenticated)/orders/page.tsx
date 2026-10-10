@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { ShoppingBag, ArrowUpRight, Clock, CheckCircle } from "lucide-react";
+import { ShoppingBag, ArrowUpRight, Clock, CheckCircle, Printer } from "lucide-react";
 import Link from "next/link";
 
 export const instant = false;
@@ -40,6 +40,7 @@ export default async function AdminOrdersPage() {
                 <th className="py-4 px-6 font-semibold">Payment</th>
                 <th className="py-4 px-6 font-semibold">Fulfillment</th>
                 <th className="py-4 px-6 font-semibold text-right">Amount</th>
+                <th className="py-4 px-6 font-semibold text-center">Slip</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
@@ -73,11 +74,22 @@ export default async function AdminOrdersPage() {
                   <td className="py-4 px-6 text-right font-bold text-gray-900">
                     ₹{(order.totalAmount / 100).toFixed(2)}
                   </td>
+                  <td className="py-4 px-6 text-center">
+                    <Link
+                      href={`/admin/orders/${order.id}/slip`}
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-green/10 text-brand-green hover:bg-brand-green hover:text-white transition-all shadow-sm"
+                      title="Print Dispatch Receipt / Packaging Slip"
+                    >
+                      <Printer size={13} />
+                      <span>Print Slip</span>
+                    </Link>
+                  </td>
                 </tr>
               ))}
               {orders.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-gray-400">
+                  <td colSpan={7} className="py-12 text-center text-gray-400">
                     <ShoppingBag size={36} className="mx-auto mb-2 text-gray-300" />
                     No orders placed yet. New store orders will appear here automatically.
                   </td>

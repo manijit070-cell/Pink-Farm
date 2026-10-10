@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { CheckCircle2, Clock, Package, Truck, Home } from "lucide-react";
+import { CheckCircle2, Clock, Package, Truck, Home, Printer } from "lucide-react";
 
 
 
@@ -32,7 +32,7 @@ export default async function OrderPage({
     notFound();
   }
 
-  const isSuccess = searchParams.status === "success" || order.paymentStatus === "PAID";
+  const isSuccess = status === "success" || order.paymentStatus === "PAID";
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 max-w-3xl">
@@ -182,10 +182,16 @@ export default async function OrderPage({
         </div>
       </div>
 
-      <div className="text-center">
-         <Button asChild variant="outline" className="border-brand-green">
-           <Link href="/products">Continue Shopping</Link>
-         </Button>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button asChild variant="outline" className="border-brand-green w-full sm:w-auto">
+          <Link href={`/order/${order.orderNumber}/receipt`} target="_blank">
+            <Printer className="w-4 h-4 mr-2" />
+            Print Receipt / Invoice
+          </Link>
+        </Button>
+        <Button asChild className="bg-brand-green text-white hover:bg-brand-green-light w-full sm:w-auto">
+          <Link href="/products">Continue Shopping</Link>
+        </Button>
       </div>
     </div>
   );

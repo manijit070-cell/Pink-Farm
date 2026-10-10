@@ -173,9 +173,9 @@ export default function CartPage() {
                 </div>
               )}
               
-              <div className="mt-6 text-center text-xs opacity-70 flex flex-col gap-2">
-                <p>Secure UPI checkout available.</p>
-                <p>By proceeding, you agree to our Terms and Policies.</p>
+              <div className="mt-6 text-center text-xs opacity-75 flex flex-col gap-1.5">
+                <p className="font-medium text-emerald-800">⚡ Guest Checkout • UPI &amp; Cards Accepted</p>
+                <p className="opacity-70">No login required to place your order.</p>
               </div>
             </div>
           </FadeIn>

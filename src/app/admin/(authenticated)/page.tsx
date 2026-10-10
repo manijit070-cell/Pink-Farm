@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/db";
-import { Package, ShoppingBag, Banknote, Clock } from "lucide-react";
-
-
+import { Package, ShoppingBag, Banknote, Clock, Printer } from "lucide-react";
+import Link from "next/link";
 
 export const instant = false;
 
 export default async function AdminDashboard() {
   let stats = { totalOrders: 0, totalRevenue: 0, pendingOrders: 0, lowStockProducts: 0 };
-  let recentOrders = [];
+  let recentOrders: any[] = [];
 
   try {
     const orders = await prisma.order.findMany({
@@ -97,6 +96,7 @@ export default async function AdminDashboard() {
                 <th className="pb-3 font-medium">Payment</th>
                 <th className="pb-3 font-medium">Status</th>
                 <th className="pb-3 font-medium text-right">Total</th>
+                <th className="pb-3 font-medium text-center">Slip</th>
               </tr>
             </thead>
             <tbody>
@@ -116,11 +116,22 @@ export default async function AdminDashboard() {
                      <span className="text-sm text-gray-700">{order.fulfillmentStatus}</span>
                   </td>
                   <td className="py-4 text-right font-medium">₹{(order.totalAmount / 100).toFixed(2)}</td>
+                  <td className="py-4 text-center">
+                    <Link
+                      href={`/admin/orders/${order.id}/slip`}
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-green/10 text-brand-green hover:bg-brand-green hover:text-white transition-all shadow-sm"
+                      title="Print Dispatch Receipt / Packaging Slip"
+                    >
+                      <Printer size={12} />
+                      <span>Slip</span>
+                    </Link>
+                  </td>
                 </tr>
               ))}
               {recentOrders.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500">No orders yet.</td>
+                  <td colSpan={7} className="py-8 text-center text-gray-500">No orders yet.</td>
                 </tr>
               )}
             </tbody>

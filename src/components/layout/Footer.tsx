@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/store/settingsStore";
 
 export function Footer() {
+  const pathname = usePathname();
   const storeName = useSettingsStore((state) => state.storeName);
   const supportPhone = useSettingsStore((state) => state.supportPhone);
   const supportEmail = useSettingsStore((state) => state.supportEmail);
@@ -12,8 +14,13 @@ export function Footer() {
 
   const cleanPhone = (supportPhone || "8437504040").replace(/[^0-9]/g, "");
 
+  // Hide footer on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
-    <footer className="bg-brand-green text-brand-ivory pt-16 pb-8 border-t border-brand-green-light">
+    <footer className="bg-brand-green text-brand-ivory pt-16 pb-8 border-t border-brand-green-light print:hidden">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
         <div>
           <div className="flex items-center gap-1 mb-6">

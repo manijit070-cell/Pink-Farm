@@ -38,8 +38,13 @@ export function Navbar() {
     { name: "Contact", path: "/contact" },
   ];
 
+  // Hide customer navbar on all admin pages
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full transition-all duration-300 print:hidden">
       
       {/* Premium Announcement Bar */}
       <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-2 text-xs md:text-sm font-medium tracking-wide flex justify-center items-center overflow-hidden px-4">

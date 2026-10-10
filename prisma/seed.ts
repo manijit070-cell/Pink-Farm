@@ -139,71 +139,6 @@ async function main() {
         { name: "70 gms", packSize: "70 gms", price: 18000, originalPrice: 20000, stockQuantity: 130 }
       ]
     },
-    {
-      name: "Premium Almonds (Badam)",
-      slug: "premium-almonds",
-      shortDescription: "Crunchy, sweet California almonds.",
-      description: "Carefully selected almonds packed with essential nutrients, perfect for your daily nutritional needs or as a wholesome snack.",
-      imageUrl: "",
-      basePrice: 39900, // 399 INR
-      sku: "PF-NUT-01",
-      category: "Nuts",
-      stockQuantity: 50,
-      isAvailable: true,
-      isFeatured: true,
-    },
-    {
-      name: "Whole Cashews (Kaju)",
-      slug: "whole-cashews",
-      shortDescription: "Creamy, large-sized whole cashews.",
-      description: "Premium W320 grade whole cashews with a rich, creamy texture and sweet flavor.",
-      imageUrl: "",
-      basePrice: 44900, // 449 INR
-      sku: "PF-NUT-02",
-      category: "Nuts",
-      stockQuantity: 40,
-      isAvailable: true,
-      isFeatured: false,
-    },
-    {
-      name: "Organic Jaggery Powder",
-      slug: "organic-jaggery-powder",
-      shortDescription: "Chemical-free, natural sweetener.",
-      description: "A healthier alternative to refined sugar, our organic jaggery powder is sourced directly from traditional sugarcane farmers.",
-      imageUrl: "",
-      basePrice: 14900, // 149 INR
-      sku: "PF-PAN-01",
-      category: "Pantry",
-      stockQuantity: 200,
-      isAvailable: true,
-      isFeatured: false,
-    },
-    {
-      name: "Cold-Pressed Mustard Oil",
-      slug: "cold-pressed-mustard-oil",
-      shortDescription: "Pure Kachi Ghani mustard oil.",
-      description: "Extracted using traditional cold-pressing methods to retain its strong flavor, aroma, and nutritional benefits.",
-      imageUrl: "",
-      basePrice: 29900, // 299 INR
-      sku: "PF-OIL-01",
-      category: "Oils",
-      stockQuantity: 30,
-      isAvailable: true,
-      isFeatured: false,
-    },
-    {
-      name: "A2 Gir Cow Bilona Ghee",
-      slug: "a2-gir-cow-bilona-ghee",
-      shortDescription: "Authentic, traditional Bilona method ghee.",
-      description: "Made from the A2 milk of grass-fed Gir cows using the traditional wooden churner (Bilona) method. Rich in aroma and health benefits.",
-      imageUrl: "",
-      basePrice: 89900, // 899 INR
-      sku: "PF-PAN-02",
-      category: "Pantry",
-      stockQuantity: 25,
-      isAvailable: true,
-      isFeatured: true,
-    }
   ];
 
   for (const prod of products) {
@@ -230,7 +165,7 @@ async function main() {
     }
   }
 
-  console.log("Database seeded with 7 products and default settings.");
+  console.log("Database seeded with 6 Makhana products and default settings.");
 }
 
 main()

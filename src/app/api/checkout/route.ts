@@ -5,7 +5,7 @@ import Razorpay from "razorpay";
 
 export async function POST(request: Request) {
   try {
-    const { customerDetails, items } = await request.json();
+    const { customerDetails, items, couponCode } = await request.json();
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
@@ -35,6 +35,18 @@ export async function POST(request: Request) {
         }
         price = variant.price;
         stock = variant.stockQuantity;
+      }
+
+      // If item was added as part of a Combo discount, calculate discount on originalPrice (MRP)
+      if (item.variantName && item.variantName.includes("Combo")) {
+        const mrp = (product.originalPrice && product.originalPrice > product.basePrice)
+          ? product.originalPrice
+          : product.basePrice;
+        if (item.variantName.includes("11%")) {
+          price = Math.round(mrp * 0.89);
+        } else if (item.variantName.includes("15%")) {
+          price = Math.round(mrp * 0.85);
+        }
       }
 
       if (item.quantity > stock) {
@@ -73,7 +85,37 @@ export async function POST(request: Request) {
     }
 
     const finalDeliveryFee = subtotal > 0 ? (freeThreshold > 0 && subtotal >= freeThreshold ? 0 : deliveryFee) : 0;
-    const totalAmount = subtotal + finalDeliveryFee;
+    
+    // Validate coupon
+    let discount = 0;
+    const rawCoupon = couponCode || (customerDetails as any)?.couponCode;
+    
+    if (rawCoupon && (String(rawCoupon).toUpperCase() === "FLAT499" || String(rawCoupon).toUpperCase() === "FIRST499")) {
+      const codeName = String(rawCoupon).toUpperCase();
+      if (subtotal >= 199900) {
+        // One-time use validation per phone number
+        const priorOrder = await prisma.order.findFirst({
+          where: {
+            customerPhone: customerDetails.mobile,
+            discount: { gt: 0 },
+          },
+        });
+        if (priorOrder) {
+          return NextResponse.json(
+            { error: `Coupon ${codeName} is a one-time use coupon and has already been used for this mobile number.` },
+            { status: 400 }
+          );
+        }
+        discount = 49900; // ₹499 in paise
+      } else {
+        return NextResponse.json(
+          { error: `Minimum order of ₹1999 required to use coupon ${codeName}.` },
+          { status: 400 }
+        );
+      }
+    }
+
+    const totalAmount = Math.max(0, subtotal - discount + finalDeliveryFee);
 
     // Generate Order Number
     const count = await prisma.order.count();
@@ -92,7 +134,8 @@ export async function POST(request: Request) {
         pinCode: customerDetails.pinCode,
         deliveryInstructions: customerDetails.deliveryInstructions,
         subtotal,
-        deliveryFee,
+        deliveryFee: finalDeliveryFee,
+        discount,
         totalAmount,
         paymentStatus: "PENDING",
         items: {

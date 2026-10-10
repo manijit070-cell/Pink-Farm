@@ -15,15 +15,15 @@ import {
   ShimmerSheen
 } from "@/components/ui/MotionWrappers";
 import { formatPrice } from "@/lib/utils";
+import ComboBuilder from "@/components/products/ComboBuilder";
 
 export const instant = false;
 
 export default async function Home() {
-  let products = [];
+  let products: any[] = [];
   try {
     products = await prisma.product.findMany({
       where: { isAvailable: true },
-      take: 6,
       orderBy: [
         { isFeatured: 'desc' },
         { createdAt: 'asc' }
@@ -144,7 +144,7 @@ export default async function Home() {
       {/* D. INFINITE MARQUEE TICKER */}
       <div className="w-full bg-brand-green text-brand-ivory py-3 overflow-hidden flex whitespace-nowrap border-y border-brand-green-light/30">
         <div className="animate-marquee inline-block font-medium tracking-widest text-sm uppercase">
-          ✦ 100% NATURAL & HYGIENIC ✦ PREMIUM BIHAR MAKHANA ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦ 100% NATURAL & HYGIENIC ✦ PREMIUM BIHAR MAKHANA ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦
+          ✦ PURE & HYGIENIC ✦ PREMIUM BIHAR MAKHANA ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦ PURE & HYGIENIC ✦ PREMIUM BIHAR MAKHANA ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦
         </div>
       </div>
 
@@ -181,13 +181,13 @@ export default async function Home() {
             <h2 className="font-serif text-3xl md:text-5xl text-brand-green uppercase tracking-wide">
               Our Signature <span className="italic text-brand-green-light lowercase font-light text-4xl md:text-6xl align-baseline">collection</span>
             </h2>
-            <p className="text-brand-charcoal opacity-80 tracking-wide uppercase text-sm">Exactly seven products, perfected for your home.</p>
+            <p className="text-brand-charcoal opacity-80 tracking-wide uppercase text-sm">Six thoughtfully curated essentials, perfected for your home.</p>
           </div>
         </FadeIn>
 
         {products.length > 0 ? (
           <StaggerContainer staggerDelay={0.16} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
-            {products.slice(0, 7).map((product, index) => (
+            {products.slice(0, 6).map((product, index) => (
               <StaggerItem key={product.id}>
                 <SpotlightCard className="rounded-[2rem] h-full" glowColor="rgba(42, 89, 78, 0.15)">
                   <Link href={`/products/${product.slug}`} className="group flex flex-col gap-4 h-full p-2">
@@ -304,6 +304,9 @@ export default async function Home() {
         </section>
       )}
 
+      {/* G2. MAKE YOUR OWN COMBO SECTION */}
+      <ComboBuilder products={products} />
+
       {/* G. WHY PINK FARM? WITH SPOTLIGHT CARDS */}
       <section className="container mx-auto px-4 text-center max-w-5xl space-y-12 py-16">
         <FadeIn>
@@ -318,9 +321,9 @@ export default async function Home() {
             <SpotlightCard className="h-full rounded-[2.5rem]" glowColor="rgba(230, 184, 192, 0.2)">
               <div className="h-full bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-pink-accent/30 hover:shadow-xl transition-all duration-300">
                 <div className="w-14 h-14 bg-brand-pink rounded-full flex items-center justify-center text-2xl mb-6 shadow-inner transition-transform duration-300 hover:rotate-6">🌱</div>
-                <h3 className="font-serif text-2xl text-brand-green mb-3 uppercase tracking-wide">100% Natural</h3>
+                <h3 className="font-serif text-2xl text-brand-green mb-3 uppercase tracking-wide">Plant Protein & Pure</h3>
                 <p className="text-brand-charcoal/80 leading-relaxed text-sm">
-                  Absolutely no artificial preservatives, colors, or flavors. Just pure, wholesome ingredients as nature intended.
+                  Rich in wholesome plant protein with absolutely no artificial preservatives, colors, or flavors. Pure goodness as nature intended.
                 </p>
               </div>
             </SpotlightCard>

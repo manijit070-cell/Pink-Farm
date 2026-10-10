@@ -250,7 +250,7 @@ export function LuxuryScrollProgressBar() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-[3px] z-[60] bg-transparent pointer-events-none">
+    <div className="fixed top-0 left-0 right-0 h-[3px] z-[60] bg-transparent pointer-events-none print:hidden">
       <motion.div
         className="h-full bg-gradient-to-r from-brand-green via-brand-pink-accent to-[#88E2B0]"
         style={{ width: `${scrollProgress}%` }}

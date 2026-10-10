@@ -2,15 +2,22 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/store/settingsStore";
 
 export function FloatingSocials() {
+  const pathname = usePathname();
   const supportPhone = useSettingsStore((state) => state.supportPhone);
   const cleanPhone = (supportPhone || "8437504040").replace(/[^0-9]/g, "");
   const whatsappUrl = `https://wa.me/${cleanPhone.startsWith("91") ? cleanPhone : `91${cleanPhone}`}`;
 
+  // Hide completely on admin routes or when printing
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3.5 pointer-events-auto">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3.5 pointer-events-auto print:hidden">
       
       {/* WhatsApp Button */}
       <motion.a 

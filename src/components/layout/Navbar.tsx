@@ -15,12 +15,30 @@ export function Navbar() {
   const cartItems = useCartStore((state) => state.items);
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
+  const [announcement, setAnnouncement] = useState("Welcome to Pink Farm — Goodness in Every Bite.");
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const syncSettings = () => {
+      try {
+        const stored = localStorage.getItem("pinkfarm_store_settings");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.announcementText) setAnnouncement(parsed.announcementText);
+        }
+      } catch {}
+    };
+    syncSettings();
+    window.addEventListener("storage", syncSettings);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("storage", syncSettings);
+    };
   }, []);
 
   const navLinks = [
@@ -35,7 +53,7 @@ export function Navbar() {
       
       {/* Premium Announcement Bar */}
       <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-2 text-xs md:text-sm font-medium tracking-wide flex justify-center items-center overflow-hidden">
-        <span className="animate-pulse">✨ Welcome to Pink Farm — Goodness in Every Bite.</span>
+        <span className="animate-pulse">✨ {announcement}</span>
       </div>
 
       {/* Main Navigation Bar */}

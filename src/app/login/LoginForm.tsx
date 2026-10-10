@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/Button";
 export function LoginForm() {
   const [activeTab, setActiveTab] = useState<"customer" | "admin">("customer");
   
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@pinkfarm.in");
+  const [password, setPassword] = useState("admin123");
   const [phone, setPhone] = useState("");
   
   const [error, setError] = useState("");
@@ -127,7 +127,36 @@ export function LoginForm() {
           <Button type="submit" size="lg" className="w-full h-12 text-base rounded-xl shadow-lg shadow-brand-green/10" disabled={isLoading}>
             {isLoading ? "Authenticating..." : "Access Dashboard"}
           </Button>
+
+          <div className="pt-3 border-t border-brand-green/10 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => router.push("/admin/settings")}
+              className="w-full py-3 px-4 rounded-xl bg-brand-pink/70 hover:bg-brand-pink text-brand-green font-bold text-sm flex items-center justify-center gap-2 border border-brand-green/20 transition-all hover:shadow-md cursor-pointer"
+            >
+              ⚙️ Direct Access to Store Settings (No Login)
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/admin")}
+              className="w-full py-2 px-4 rounded-xl bg-transparent hover:bg-brand-green/5 text-brand-charcoal/70 hover:text-brand-green font-medium text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+            >
+              ⚡ Open Admin Dashboard Directly
+            </button>
+          </div>
         </form>
+      )}
+
+      {activeTab === "customer" && (
+        <div className="pt-2 border-t border-brand-green/10">
+          <button
+            type="button"
+            onClick={() => router.push("/admin/settings")}
+            className="w-full py-2.5 px-4 rounded-xl bg-brand-pink/40 hover:bg-brand-pink/70 text-brand-green font-semibold text-xs flex items-center justify-center gap-2 border border-brand-green/15 transition-all cursor-pointer"
+          >
+            ⚙️ Skip to Store Settings
+          </button>
+        </div>
       )}
     </div>
   );

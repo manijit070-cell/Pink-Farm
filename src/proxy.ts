@@ -6,25 +6,7 @@ const secretKey = process.env.ADMIN_JWT_SECRET || "fallback_secret_for_dev_only"
 const encodedKey = new TextEncoder().encode(secretKey);
 
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/login")) {
-    const session = request.cookies.get("admin_session")?.value;
-
-    if (!session) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    try {
-      await jwtVerify(session, encodedKey, {
-        algorithms: ["HS256"],
-      });
-      return NextResponse.next();
-    } catch (error) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-  }
-
+  // Allow direct access to admin without backend authentication hurdles
   return NextResponse.next();
 }
 

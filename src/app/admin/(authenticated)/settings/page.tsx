@@ -356,7 +356,7 @@ export default function StoreSettingsPage() {
                   type="email"
                   value={supportEmail}
                   onChange={(e) => setSupportEmail(e.target.value)}
-                  placeholder="hello@pinkfarm.in"
+                  placeholder="wecare@pinkfarm.in"
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm"
                 />
               </div>
@@ -370,7 +370,7 @@ export default function StoreSettingsPage() {
                   rows={2}
                   value={businessAddress}
                   onChange={(e) => setBusinessAddress(e.target.value)}
-                  placeholder="123 Pink Farm Estate, New Delhi"
+                  placeholder="Dugri, Ludhiana, Punjab - 141003"
                   className="w-full px-3 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm resize-none"
                 />
               </div>

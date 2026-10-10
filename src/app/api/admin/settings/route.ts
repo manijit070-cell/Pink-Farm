@@ -5,9 +5,9 @@ const DEFAULT_SETTINGS = {
   id: "default",
   storeName: "Pink Farm",
   announcementText: "Welcome to Pink Farm — Goodness in Every Bite.",
-  supportPhone: "+91 99999 99999",
-  supportEmail: "hello@pinkfarm.in",
-  businessAddress: "123 Pink Farm Estate, New Delhi",
+  supportPhone: "+91 8437504040",
+  supportEmail: "wecare@pinkfarm.in",
+  businessAddress: "Dugri, Ludhiana, Punjab - 141003",
   deliveryFee: 5000, // in paise = ₹50
   freeDeliveryThreshold: 50000, // in paise = ₹500
   isAcceptingOrders: true,

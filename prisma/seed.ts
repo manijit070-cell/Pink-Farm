@@ -13,6 +13,18 @@ async function main() {
       data: {
         id: "default",
         storeName: "Pink Farm",
+        supportPhone: "+91 8437504040",
+        supportEmail: "wecare@pinkfarm.in",
+        businessAddress: "Dugri, Ludhiana, Punjab - 141003",
+      }
+    });
+  } else {
+    await prisma.storeSettings.update({
+      where: { id: "default" },
+      data: {
+        supportPhone: "+91 8437504040",
+        supportEmail: "wecare@pinkfarm.in",
+        businessAddress: "Dugri, Ludhiana, Punjab - 141003",
       }
     });
   }

@@ -132,14 +132,14 @@ export default async function OrderSlipPage({
                 DISPATCHED FROM / RETURN TO
               </div>
               <div className="font-bold text-xs text-black">
-                {settings?.storeName || "Pink Farm"}
+                {settings?.storeName || "Pink Farm"} &bull; Anjali
               </div>
               <div className="text-[11px] text-gray-700 leading-relaxed mt-0.5">
-                {settings?.businessAddress || "123 Pink Farm Estate, New Delhi"}
+                {settings?.businessAddress || "Dugri, Ludhiana, Punjab - 141003"}
               </div>
               <div className="mt-1.5 text-[10px] text-gray-800">
-                <div>✉️ {settings?.supportEmail || "hello@pinkfarm.in"}</div>
-                <div>📞 {settings?.supportPhone || "+91 99999 99999"}</div>
+                <div>✉️ {settings?.supportEmail || "wecare@pinkfarm.in"}</div>
+                <div>📞 {settings?.supportPhone || "+91 8437504040"}</div>
               </div>
             </div>
 
@@ -204,7 +204,7 @@ export default async function OrderSlipPage({
                 Fulfillment &amp; Customer Note:
               </p>
               <p className="text-[10px] leading-relaxed">
-                Thank you for ordering with Pink Farm! Goods are handpicked &amp; packed hygienically. For any queries, WhatsApp us at {settings?.supportPhone || "+91 99999 99999"}.
+                Thank you for ordering with Pink Farm! Goods are handpicked &amp; packed hygienically. For any queries, WhatsApp us at {settings?.supportPhone || "+91 8437504040"}.
               </p>
             </div>
             <div className="mt-2 pt-1 border-t border-gray-300 text-[9px]">

@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`,
       {
         headers: {
-          "User-Agent": "PinkFarmECommerce/1.0 (info@pinkfarm.in)",
+          "User-Agent": "PinkFarmECommerce/1.0 (wecare@pinkfarm.in)",
           "Accept-Language": "en",
         },
       }

@@ -69,12 +69,6 @@ export default async function Home() {
                     </Button>
                   </ShimmerSheen>
                 </ScaleOnTap>
-                
-                <ScaleOnTap>
-                  <Button asChild variant="outline" size="lg" className="w-full sm:w-auto text-base border-brand-green/30 bg-white/40 backdrop-blur-md rounded-full px-8 py-6 hover:bg-brand-green hover:text-white transition-all duration-300">
-                    <Link href={makhanaProduct ? `/products/${makhanaProduct.slug}` : "/products"}>Explore Our Makhana</Link>
-                  </Button>
-                </ScaleOnTap>
               </div>
             </FadeIn>
           </div>
@@ -132,7 +126,7 @@ export default async function Home() {
       {/* D. INFINITE MARQUEE TICKER */}
       <div className="w-full bg-brand-green text-brand-ivory py-3 overflow-hidden flex whitespace-nowrap border-y border-brand-green-light/30">
         <div className="animate-marquee inline-block font-medium tracking-widest text-sm uppercase">
-          ✦ PURE & HYGIENIC ✦ PREMIUM BIHAR MAKHANA ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦ PURE & HYGIENIC ✦ PREMIUM BIHAR MAKHANA ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦
+          ✦ PURE & HYGIENIC ✦ PREMIUM GOODS ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦ PURE & HYGIENIC ✦ PREMIUM GOODS ✦ FAST PAN-INDIA DISPATCH ✦ NO ARTIFICIAL PRESERVATIVES ✦ FARM TO TABLE ✦ GOOGLE RATING 4.9 VERIFIED ✦
         </div>
       </div>
 

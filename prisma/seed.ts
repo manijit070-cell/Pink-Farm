@@ -118,10 +118,10 @@ async function main() {
       ]
     },
     {
-      name: "Caramel Gud Makhana",
+      name: "Caramel Gur Makhana",
       slug: "caramel-gud-makhana",
-      shortDescription: "Makhana meets the goodness of gud.",
-      description: "Premium makhana coated with a delightful caramel-gud flavour for a sweet, crunchy treat. Perfect for satisfying your sweet cravings, one bite at a time!",
+      shortDescription: "Makhana meets the goodness of gur.",
+      description: "Premium makhana coated with a delightful caramel-gur flavour for a sweet, crunchy treat. Perfect for satisfying your sweet cravings, one bite at a time!",
       imageUrl: "/images/makhana_sig.jpg",
       basePrice: 20700,
       originalPrice: 23000,

@@ -274,7 +274,7 @@ export default async function OrderSlipPage({
             </div>
           </div>
           <div className="text-center sm:text-right text-[10px] font-bold text-black">
-            ✦ Authentic Bihar Makhana · Packed With Care ✦
+            ✦ Authentic Premium Goods · Packed With Care ✦
           </div>
         </div>
 

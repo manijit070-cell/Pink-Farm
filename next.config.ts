@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
 
+  outputFileTracingIncludes: {
+    "/**": ["./prisma/**/*"],
+  },
+
   turbopack: {
     rules: {
       "*.css": {

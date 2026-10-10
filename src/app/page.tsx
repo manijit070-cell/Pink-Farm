@@ -16,24 +16,12 @@ import {
 } from "@/components/ui/MotionWrappers";
 import { formatPrice } from "@/lib/utils";
 import ComboBuilder from "@/components/products/ComboBuilder";
+import { getStoreProducts } from "@/lib/defaultProducts";
 
 export const instant = false;
 
 export default async function Home() {
-  let products: any[] = [];
-  try {
-    products = await prisma.product.findMany({
-      where: { isAvailable: true },
-      orderBy: [
-        { isFeatured: 'desc' },
-        { createdAt: 'asc' }
-      ],
-      include: { variants: true }
-    });
-  } catch (error) {
-    console.error("Database connection failed for products", error);
-  }
-
+  const products = await getStoreProducts();
   const makhanaProduct = products.find(p => p.category.toLowerCase() === 'makhana') || products[0];
 
   return (

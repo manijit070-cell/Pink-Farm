@@ -1,20 +1,12 @@
-import { prisma } from "@/lib/db";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { AdminProductsTable } from "./AdminProductsTable";
+import { getStoreProducts } from "@/lib/defaultProducts";
 
 export const instant = false;
 
 export default async function AdminProductsPage() {
-  let products: any[] = [];
-  try {
-    products = await prisma.product.findMany({
-      include: { variants: true },
-      orderBy: { createdAt: "desc" },
-    });
-  } catch (err) {
-    console.warn("Could not query products:", err);
-  }
+  const products = await getStoreProducts();
 
   return (
     <div className="space-y-6">

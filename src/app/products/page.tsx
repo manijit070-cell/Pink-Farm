@@ -1,21 +1,12 @@
-import { prisma } from "@/lib/db";
 import { ProductListClient } from "./ProductListClient";
 import { FadeIn } from "@/components/ui/MotionWrappers";
 import ComboBuilder from "@/components/products/ComboBuilder";
+import { getStoreProducts } from "@/lib/defaultProducts";
 
 export const instant = false;
 
 export default async function ProductsPage() {
-  let products: any[] = [];
-  try {
-    products = await prisma.product.findMany({
-      where: { isAvailable: true },
-      orderBy: { isFeatured: "desc" },
-      include: { variants: true },
-    });
-  } catch (error) {
-    console.error("Database connection failed", error);
-  }
+  const products = await getStoreProducts();
 
   return (
     <div className="flex flex-col gap-12 pb-16 overflow-x-hidden">

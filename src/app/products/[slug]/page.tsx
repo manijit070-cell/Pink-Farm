@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
 import { AddToCart } from "./AddToCart";
 import { ChevronRight, Star } from "lucide-react";
 import { FadeIn, HoverCard, GlowPulse } from "@/components/ui/MotionWrappers";
 import { ProductBadges } from "@/components/products/ProductHighlightBadges";
+import { getStoreProductBySlug } from "@/lib/defaultProducts";
 
 export const instant = false;
 
@@ -15,15 +15,7 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  let product;
-  try {
-    product = await prisma.product.findUnique({
-      where: { slug: slug },
-      include: { variants: true },
-    });
-  } catch (error) {
-    console.error("Database connection failed", error);
-  }
+  const product = await getStoreProductBySlug(slug);
 
   if (!product) {
     notFound();

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import crypto from "crypto";
 import Razorpay from "razorpay";
+import { getStoreProductById } from "@/lib/defaultProducts";
 
 export async function POST(request: Request) {
   try {
@@ -16,10 +17,19 @@ export async function POST(request: Request) {
     const validatedItems = [];
 
     for (const item of items) {
-      const product = await prisma.product.findUnique({
-        where: { id: item.id },
-        include: { variants: true },
-      });
+      let product: any = null;
+      try {
+        product = await prisma.product.findUnique({
+          where: { id: item.id },
+          include: { variants: true },
+        });
+      } catch (dbErr) {
+        console.warn("DB lookup failed in checkout, trying catalog fallback:", dbErr);
+      }
+
+      if (!product) {
+        product = await getStoreProductById(item.id);
+      }
 
       if (!product || !product.isAvailable) {
         return NextResponse.json({ error: `Product ${item.name} is unavailable.` }, { status: 400 });
@@ -29,7 +39,7 @@ export async function POST(request: Request) {
       let stock = product.stockQuantity;
 
       if (item.variantId) {
-        const variant = product.variants.find((v) => v.id === item.variantId);
+        const variant = product.variants?.find((v: any) => v.id === item.variantId);
         if (!variant || !variant.isAvailable) {
           return NextResponse.json({ error: `Variant for ${item.name} is unavailable.` }, { status: 400 });
         }

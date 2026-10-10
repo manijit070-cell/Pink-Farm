@@ -24,9 +24,9 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
 
   const currentPrice = selectedVariant ? selectedVariant.price : product.basePrice;
   const currentStock = selectedVariant ? selectedVariant.stockQuantity : product.stockQuantity;
-  const maxQty = Math.min(10, currentStock);
+  const maxQty = 10;
   
-  const isOutOfStock = currentStock <= 0 || !product.isAvailable || (selectedVariant && !selectedVariant.isAvailable);
+  const isOutOfStock = !product.isAvailable || (selectedVariant && !selectedVariant.isAvailable) || currentStock <= 0;
   const isDisabled = isOutOfStock || !isAcceptingOrders;
 
   const handleAddToCart = () => {
@@ -136,13 +136,11 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
             </button>
           </div>
           
-          <span className="text-sm opacity-70">
-            {isOutOfStock ? (
-              <span className="text-red-500 font-medium">Out of stock</span>
-            ) : (
-              `${currentStock} available`
-            )}
-          </span>
+          {isOutOfStock && (
+            <span className="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 px-3 py-1 rounded-full uppercase tracking-wider">
+              Out of stock
+            </span>
+          )}
         </div>
       </div>
 
@@ -163,6 +161,10 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
               <>
                 <ShoppingCart className="mr-2 h-5 w-5" /> Orders Paused
               </>
+            ) : isOutOfStock ? (
+              <>
+                <ShoppingCart className="mr-2 h-5 w-5" /> Out of Stock
+              </>
             ) : (
               <>
                 <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
@@ -182,7 +184,7 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
               }}
               disabled={isDisabled}
             >
-              {!isAcceptingOrders ? "Ordering Paused" : "Buy Now"}
+              {!isAcceptingOrders ? "Ordering Paused" : isOutOfStock ? "Out of Stock" : "Buy Now"}
             </Button>
           </ShimmerSheen>
         </ScaleOnTap>

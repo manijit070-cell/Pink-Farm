@@ -47,12 +47,22 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const originalPrice = selectedVariant?.originalPrice || product.originalPrice;
+  const hasDiscount = originalPrice && originalPrice > currentPrice;
+  const discountPercent = hasDiscount ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
+  const formatPrice = (p: number) => (p / 100) % 1 === 0 ? (p / 100).toFixed(0) : (p / 100).toFixed(2);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <span className="text-3xl font-bold text-brand-green">₹{(currentPrice / 100).toFixed(2)}</span>
-        {product.originalPrice && !selectedVariant && (
-          <span className="text-xl line-through opacity-50">₹{(product.originalPrice / 100).toFixed(2)}</span>
+      <div className="flex items-baseline gap-3 flex-wrap">
+        <span className="text-3xl font-extrabold text-brand-green">₹{formatPrice(currentPrice)}</span>
+        {hasDiscount && (
+          <>
+            <span className="text-xl line-through text-brand-charcoal/40 font-medium">₹{formatPrice(originalPrice)}</span>
+            <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+              {discountPercent}% OFF
+            </span>
+          </>
         )}
       </div>
 

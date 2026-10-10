@@ -38,21 +38,20 @@ async function main() {
   // The 6 Makhana Products
   const products = [
     {
-      name: "Raw Premium Phool Makhana",
-      slug: "raw-premium-phool-makhana",
+      name: "Premium Raw Phool Makhana",
+      slug: "premium-raw-phool-makhana",
       shortDescription: "Handpicked, light & wholesome",
       description: "Made from carefully selected makhana, kept simple and unflavoured for pure versatility. Roast it, season it, or enjoy creating your own snack!",
       imageUrl: "/images/makhana_sig.jpg",
-      basePrice: 19900,
-      originalPrice: 24900,
+      basePrice: 37425,
+      originalPrice: 49900,
       sku: "PF-MAK-01",
       category: "Makhana",
       stockQuantity: 150,
       isAvailable: true,
       isFeatured: true,
       variants: [
-        { name: "250g", packSize: "250g", price: 19900, stockQuantity: 80 },
-        { name: "500g", packSize: "500g", price: 34900, stockQuantity: 70 }
+        { name: "200 gms", packSize: "200 gms", price: 37425, originalPrice: 49900, stockQuantity: 150 }
       ]
     },
     {
@@ -61,16 +60,15 @@ async function main() {
       shortDescription: "A spicy kick in every crunchy bite.",
       description: "Carefully selected makhana, perfectly coated with a bold peri peri seasoning. Every crunchy bite brings a spicy twist to your everyday snacking!",
       imageUrl: "/images/makhana_sig.jpg",
-      basePrice: 21900,
-      originalPrice: 25900,
+      basePrice: 18900,
+      originalPrice: 21000,
       sku: "PF-MAK-02",
       category: "Makhana",
       stockQuantity: 120,
       isAvailable: true,
       isFeatured: true,
       variants: [
-        { name: "100g", packSize: "100g", price: 11900, stockQuantity: 60 },
-        { name: "250g", packSize: "250g", price: 21900, stockQuantity: 60 }
+        { name: "70 gms", packSize: "70 gms", price: 18900, originalPrice: 21000, stockQuantity: 120 }
       ]
     },
     {
@@ -79,16 +77,15 @@ async function main() {
       shortDescription: "Desi tadka, bold flavour, perfect crunch.",
       description: "Premium handpicked makhana tossed in a flavourful Punjabi tadka seasoning. Enjoy the perfect desi twist in every crunchy bite!",
       imageUrl: "/images/makhana_sig.jpg",
-      basePrice: 21900,
-      originalPrice: 25900,
+      basePrice: 18900,
+      originalPrice: 21000,
       sku: "PF-MAK-03",
       category: "Makhana",
       stockQuantity: 120,
       isAvailable: true,
       isFeatured: true,
       variants: [
-        { name: "100g", packSize: "100g", price: 11900, stockQuantity: 60 },
-        { name: "250g", packSize: "250g", price: 21900, stockQuantity: 60 }
+        { name: "70 gms", packSize: "70 gms", price: 18900, originalPrice: 21000, stockQuantity: 120 }
       ]
     },
     {
@@ -97,16 +94,15 @@ async function main() {
       shortDescription: "Refreshing mint with a chatpata twist.",
       description: "Carefully selected makhana blended with refreshing minty pudina seasoning. A flavourful, chatpata companion for your everyday snack cravings!",
       imageUrl: "/images/makhana_sig.jpg",
-      basePrice: 21900,
-      originalPrice: 25900,
+      basePrice: 18900,
+      originalPrice: 21000,
       sku: "PF-MAK-04",
       category: "Makhana",
       stockQuantity: 120,
       isAvailable: true,
       isFeatured: true,
       variants: [
-        { name: "100g", packSize: "100g", price: 11900, stockQuantity: 60 },
-        { name: "250g", packSize: "250g", price: 21900, stockQuantity: 60 }
+        { name: "70 gms", packSize: "70 gms", price: 18900, originalPrice: 21000, stockQuantity: 120 }
       ]
     },
     {
@@ -115,34 +111,32 @@ async function main() {
       shortDescription: "Makhana meets the goodness of gud.",
       description: "Premium makhana coated with a delightful caramel-gud flavour for a sweet, crunchy treat. Perfect for satisfying your sweet cravings, one bite at a time!",
       imageUrl: "/images/makhana_sig.jpg",
-      basePrice: 24900,
-      originalPrice: 29900,
+      basePrice: 20700,
+      originalPrice: 23000,
       sku: "PF-MAK-05",
       category: "Makhana",
       stockQuantity: 100,
       isAvailable: true,
       isFeatured: true,
       variants: [
-        { name: "100g", packSize: "100g", price: 13900, stockQuantity: 50 },
-        { name: "250g", packSize: "250g", price: 24900, stockQuantity: 50 }
+        { name: "70 gms", packSize: "70 gms", price: 20700, originalPrice: 23000, stockQuantity: 100 }
       ]
     },
     {
-      name: "Himalayan Salted Makhana",
-      slug: "himalayan-salted-makhana",
+      name: "Himalayan Pink Salted Makhana",
+      slug: "himalayan-pink-salted-makhana",
       shortDescription: "Simply salted, perfectly crunchy.",
       description: "Carefully selected makhana seasoned with a simple, savoury Himalayan salt flavour. Light, crunchy and perfect for everyday munching!",
       imageUrl: "/images/makhana_sig.jpg",
-      basePrice: 20900,
-      originalPrice: 24900,
+      basePrice: 18000,
+      originalPrice: 20000,
       sku: "PF-MAK-06",
       category: "Makhana",
       stockQuantity: 130,
       isAvailable: true,
       isFeatured: true,
       variants: [
-        { name: "100g", packSize: "100g", price: 11900, stockQuantity: 65 },
-        { name: "250g", packSize: "250g", price: 20900, stockQuantity: 65 }
+        { name: "70 gms", packSize: "70 gms", price: 18000, originalPrice: 20000, stockQuantity: 130 }
       ]
     },
     {

@@ -206,21 +206,35 @@ export default async function Home() {
                           Placeholder
                         </div>
                       )}
-                      {index === 0 && (
+                      {product.variants?.[0]?.packSize ? (
+                        <div className="absolute top-3 left-3 bg-brand-green/90 backdrop-blur-xs text-white text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                          {product.variants[0].packSize}
+                        </div>
+                      ) : index === 0 ? (
                         <div className="absolute top-3 left-3 bg-brand-green text-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
                           Signature
+                        </div>
+                      ) : null}
+                      {product.originalPrice && product.originalPrice > product.basePrice && (
+                        <div className="absolute top-3 right-3 bg-brand-pink text-brand-green border border-brand-green/20 text-[10px] sm:text-xs font-extrabold px-2 py-0.5 rounded-full shadow-md">
+                          {Math.round((1 - product.basePrice / product.originalPrice) * 100)}% OFF
                         </div>
                       )}
                     </div>
                     <div className="pt-2 px-1">
                       <h3 className="font-serif text-base sm:text-lg lg:text-xl font-bold text-brand-green group-hover:text-brand-green-light transition-colors leading-tight">{product.name}</h3>
-                      <p className="hidden sm:block text-sm text-brand-charcoal opacity-60 line-clamp-1 mt-1 mb-3">{product.shortDescription}</p>
+                      <p className="hidden sm:block text-sm text-brand-charcoal opacity-60 line-clamp-1 mt-1 mb-2">{product.shortDescription}</p>
                       
-                      {/* Dual-Pill Footer */}
+                      {/* Price & Discount */}
                       <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
                         <div className="bg-brand-green text-brand-ivory px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-transform duration-300 group-hover:scale-105">
-                          ₹{(product.basePrice / 100).toFixed(0)}
+                          ₹{(product.basePrice / 100) % 1 === 0 ? (product.basePrice / 100).toFixed(0) : (product.basePrice / 100).toFixed(2)}
                         </div>
+                        {product.originalPrice && product.originalPrice > product.basePrice && (
+                          <span className="text-xs text-brand-charcoal/50 line-through font-medium">
+                            ₹{(product.originalPrice / 100) % 1 === 0 ? (product.originalPrice / 100).toFixed(0) : (product.originalPrice / 100).toFixed(2)}
+                          </span>
+                        )}
                         <div className="bg-brand-cream border border-brand-green/20 text-brand-green px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wider">
                           PREMIUM
                         </div>

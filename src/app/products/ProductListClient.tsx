@@ -164,7 +164,21 @@ export function ProductListClient({ initialProducts }: { initialProducts: Produc
                     <div>
                       <h3 className="font-serif text-lg font-bold text-brand-green group-hover:text-brand-green-light transition-colors leading-tight">{product.name}</h3>
                       <p className="text-sm opacity-70 line-clamp-2 mt-1">{product.shortDescription}</p>
-                      <p className="font-bold text-brand-green mt-2">₹{(product.basePrice / 100).toFixed(2)}</p>
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <p className="font-bold text-brand-green text-base">
+                          ₹{(product.basePrice / 100) % 1 === 0 ? (product.basePrice / 100).toFixed(0) : (product.basePrice / 100).toFixed(2)}
+                        </p>
+                        {product.originalPrice && product.originalPrice > product.basePrice && (
+                          <span className="text-xs text-brand-charcoal/50 line-through font-medium">
+                            ₹{(product.originalPrice / 100) % 1 === 0 ? (product.originalPrice / 100).toFixed(0) : (product.originalPrice / 100).toFixed(2)}
+                          </span>
+                        )}
+                        {product.originalPrice && product.originalPrice > product.basePrice && (
+                          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded-full">
+                            {Math.round((1 - product.basePrice / product.originalPrice) * 100)}% OFF
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 </SpotlightCard>

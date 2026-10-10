@@ -59,24 +59,24 @@ export default async function OrderSlipPage({
         
         {/* Top Header: Brand Trademark + Document Title */}
         <div className="border-b-2 border-black pb-3 mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3.5">
             <Image
               src="/lotus-logo-gold.png"
               alt="Pink Farm Trademark Logo"
-              width={64}
-              height={64}
+              width={160}
+              height={160}
               priority
               unoptimized
-              className="w-11 h-11 sm:w-13 sm:h-13 object-contain shrink-0 drop-shadow-xs"
+              className="w-16 h-16 sm:w-20 sm:h-20 object-contain shrink-0 drop-shadow-xs"
             />
             <div>
               <h1 
-                className="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight leading-none text-[#C24869]"
+                className="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight leading-none text-[#C24869]"
                 style={{ color: "#C24869", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}
               >
                 Pink Farm
               </h1>
-              <p className="text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase text-gray-600 mt-1">
+              <p className="text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase text-gray-600 mt-1.5">
                 Premium Makhana &amp; Wholesome Superfoods
               </p>
             </div>

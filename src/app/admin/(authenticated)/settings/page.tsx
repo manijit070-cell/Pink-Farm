@@ -38,7 +38,6 @@ export default function StoreSettingsPage() {
 
   // Sync state from store / remote API on mount
   useEffect(() => {
-    // 1. Initial values from zustand store
     if (storeSettings.storeName) {
       setStoreName(storeSettings.storeName);
       setAnnouncementText(storeSettings.announcementText);
@@ -52,7 +51,6 @@ export default function StoreSettingsPage() {
       setIsAcceptingOrders(storeSettings.isAcceptingOrders);
     }
 
-    // 2. Fetch fresh from backend API
     fetch("/api/admin/settings")
       .then((res) => res.json())
       .then((data) => {
@@ -78,8 +76,8 @@ export default function StoreSettingsPage() {
       });
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setIsSaving(true);
     setSaveSuccess(false);
     setStatusMessage("");
@@ -98,7 +96,6 @@ export default function StoreSettingsPage() {
       isAcceptingOrders,
     };
 
-    // Update client Zustand store immediately
     useSettingsStore.getState().setSettings(payload);
 
     try {
@@ -110,344 +107,291 @@ export default function StoreSettingsPage() {
 
       if (res.ok) {
         setSaveSuccess(true);
-        setStatusMessage("Settings saved successfully and applied across your storefront!");
+        setStatusMessage("Settings saved successfully!");
       } else {
         setSaveSuccess(true);
-        setStatusMessage("Settings updated locally for your store session.");
+        setStatusMessage("Settings updated locally.");
       }
     } catch {
       setSaveSuccess(true);
       setStatusMessage("Settings saved locally.");
     } finally {
       setIsSaving(false);
-      setTimeout(() => setSaveSuccess(false), 5000);
+      setTimeout(() => setSaveSuccess(false), 4000);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-16">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-6">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center font-bold">
-              <Store size={22} />
-            </div>
-            <div>
-              <h1 className="text-3xl font-serif font-bold text-gray-900">
+    <div className="max-w-6xl mx-auto space-y-4">
+      {/* Compact Top Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 sm:px-5 sm:py-3 rounded-xl border border-gray-200/90 shadow-2xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-brand-green/10 text-brand-green flex items-center justify-center shrink-0">
+            <Store size={18} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-serif font-bold text-gray-900 leading-none">
                 Store Settings
               </h1>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Configure your store branding, banner announcements, order status, contact info, and delivery rates.
-              </p>
+              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${isAcceptingOrders ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+                {isAcceptingOrders ? "● Store Online" : "● Orders Paused"}
+              </span>
             </div>
+            <p className="text-xs text-gray-400 mt-0.5 hidden sm:block">
+              Configure brand identity, announcements, delivery rules & contacts
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <Link
             href="/"
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 font-medium text-sm transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-semibold transition-colors"
           >
-            <ExternalLink size={16} />
-            View Live Store
+            <ExternalLink size={13} />
+            <span>Storefront</span>
           </Link>
           <button
-            onClick={handleSave}
+            onClick={() => handleSave()}
             disabled={isSaving}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm shadow-md shadow-brand-green/15 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-brand-green hover:bg-brand-green-dark text-white font-bold text-xs shadow-xs transition-all cursor-pointer disabled:opacity-50"
           >
             {isSaving ? (
-              <RefreshCw size={16} className="animate-spin" />
+              <RefreshCw size={13} className="animate-spin" />
             ) : saveSuccess ? (
-              <CheckCircle2 size={16} className="text-emerald-300" />
+              <CheckCircle2 size={13} className="text-emerald-300" />
             ) : (
-              <Save size={16} />
+              <Save size={13} />
             )}
-            {isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Save Changes"}
+            <span>{isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Save Changes"}</span>
           </button>
         </div>
       </div>
 
-      {/* Success notification banner */}
+      {/* Floating Save Alert */}
       {saveSuccess && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between animate-fade-in-up">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
-            <p className="text-sm font-semibold">
-              {statusMessage || "Settings updated and applied live to the store!"}
-            </p>
+        <div className="p-2.5 px-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between animate-fade-in-up">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+            <span className="font-semibold">{statusMessage || "Settings applied live across your store!"}</span>
           </div>
-          <span className="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-bold">
+          <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
             Live
           </span>
         </div>
       )}
 
-      {/* Main Form */}
-      <form onSubmit={handleSave} className="space-y-8">
+      {/* 2-Column Responsive Layout that fits on screen */}
+      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
-        {/* Section 1: Store Ordering Toggle */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className={`p-2.5 rounded-lg ${isAcceptingOrders ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-                <Power size={20} />
+        {/* LEFT COLUMN: Store Identity & Shipping Rules (col-span-7) */}
+        <div className="lg:col-span-7 space-y-4">
+          
+          {/* Card 1: Brand & Top Announcement Bar */}
+          <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-200/90 shadow-2xs space-y-3.5">
+            <div className="flex items-center gap-2 pb-2.5 border-b border-gray-100">
+              <Bell size={16} className="text-brand-green" />
+              <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+                Store Identity & Announcement Bar
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-600">Store Name</label>
+                <input
+                  type="text"
+                  value={storeName}
+                  onChange={(e) => setStoreName(e.target.value)}
+                  placeholder="Pink Farm"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm"
+                />
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">Accepting Online Orders</h2>
-                <p className="text-sm text-gray-500">
-                  When enabled, customers can add products to cart and checkout normally.
-                </p>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-600">Top Announcement Text</label>
+                <input
+                  type="text"
+                  value={announcementText}
+                  onChange={(e) => setAnnouncementText(e.target.value)}
+                  placeholder="Welcome to Pink Farm — Goodness in Every Bite."
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm"
+                />
               </div>
             </div>
 
-            <label className="relative inline-flex items-center cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={isAcceptingOrders}
-                onChange={(e) => setIsAcceptingOrders(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-brand-green"></div>
-              <span className="ml-3 text-sm font-bold min-w-[130px]">
-                {isAcceptingOrders ? (
-                  <span className="text-emerald-600 flex items-center gap-1.5">
-                    ● Store Active
-                  </span>
-                ) : (
-                  <span className="text-amber-600 flex items-center gap-1.5">
-                    ● Orders Paused
-                  </span>
-                )}
-              </span>
-            </label>
+            {/* Inline Mini Live Preview */}
+            <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200/60 flex flex-col gap-1.5">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                <Sparkles size={11} className="text-brand-pink-accent" />
+                Live Top Bar Preview
+              </div>
+              <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-1.5 px-3 rounded-md text-xs font-medium truncate">
+                ✨ {announcementText || "Welcome to Pink Farm — Goodness in Every Bite."}
+              </div>
+            </div>
           </div>
 
-          {!isAcceptingOrders && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3.5 text-xs flex items-center gap-2">
-              <Info size={16} className="shrink-0 text-amber-600" />
+          {/* Card 2: Delivery Fees & Free Shipping Rules */}
+          <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-200/90 shadow-2xs space-y-3.5">
+            <div className="flex items-center gap-2 pb-2.5 border-b border-gray-100">
+              <Truck size={16} className="text-orange-600" />
+              <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+                Delivery Fees & Shipping Threshold
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-600">Standard Delivery Fee (₹)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs">₹</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={deliveryFeeRupees}
+                    onChange={(e) => setDeliveryFeeRupees(e.target.value)}
+                    placeholder="50"
+                    className="w-full pl-7 pr-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm font-semibold"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-600">Free Delivery Above (₹)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs">₹</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={freeThresholdRupees}
+                    onChange={(e) => setFreeThresholdRupees(e.target.value)}
+                    placeholder="500"
+                    className="w-full pl-7 pr-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm font-semibold"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-orange-50/70 border border-orange-200/70 rounded-lg p-2.5 text-xs text-orange-900 flex items-center justify-between">
               <span>
-                <strong>Store is currently paused:</strong> Product checkout and Add-to-Cart buttons will show a polite &quot;Orders Paused&quot; notice until re-enabled.
+                📦 <strong>Active Rule:</strong> ₹{deliveryFeeRupees || 0} delivery fee. Orders of ₹{freeThresholdRupees || 0}+ get <strong>FREE shipping</strong>.
               </span>
             </div>
-          )}
+          </div>
+
         </div>
 
-        {/* Section 2: Store Identity & Announcement Bar */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-            <div className="p-2.5 rounded-lg bg-brand-pink/50 text-brand-green">
-              <Bell size={20} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">Store Identity & Announcements</h2>
-              <p className="text-sm text-gray-500">
-                Update store branding and the top banner announcement displayed across every page.
-              </p>
-            </div>
-          </div>
+        {/* RIGHT COLUMN: Ordering Status & Customer Contacts (col-span-5) */}
+        <div className="lg:col-span-5 space-y-4">
+          
+          {/* Card 3: Store Ordering Status Toggle */}
+          <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-200/90 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Power size={16} className={isAcceptingOrders ? "text-emerald-600" : "text-amber-600"} />
+                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+                  Store Ordering Status
+                </h2>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-gray-700">
-                Store Name
-              </label>
-              <input
-                type="text"
-                value={storeName}
-                onChange={(e) => setStoreName(e.target.value)}
-                placeholder="Pink Farm"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
-              />
-              <p className="text-xs text-gray-400">
-                Used in header branding, footer copyright, and page headers.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-gray-700">
-                Announcement Bar Banner Text
-              </label>
-              <input
-                type="text"
-                value={announcementText}
-                onChange={(e) => setAnnouncementText(e.target.value)}
-                placeholder="Welcome to Pink Farm — Goodness in Every Bite."
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
-              />
-              <p className="text-xs text-gray-400">
-                Displays live in the top bar across the entire website.
-              </p>
-            </div>
-          </div>
-
-          {/* Live Preview Card */}
-          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200/60 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider">
-              <Sparkles size={14} className="text-brand-pink-accent" />
-              Live Announcement Bar Preview
-            </div>
-            <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-2 px-4 rounded-lg text-xs md:text-sm font-medium shadow-sm min-h-[36px] flex items-center justify-center">
-              <span>✨ {announcementText || "Welcome to Pink Farm — Goodness in Every Bite."}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 3: Customer Support & Contact Info */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-            <div className="p-2.5 rounded-lg bg-blue-50 text-blue-700">
-              <Phone size={20} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">Customer Support & Contacts</h2>
-              <p className="text-sm text-gray-500">
-                Syncs with footer contacts, contact page cards, and floating WhatsApp buttons.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-gray-700 flex items-center gap-2">
-                <Phone size={14} className="text-gray-400" />
-                Support Phone / WhatsApp
-              </label>
-              <input
-                type="text"
-                value={supportPhone}
-                onChange={(e) => setSupportPhone(e.target.value)}
-                placeholder="+91 8437504040"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
-              />
-              <p className="text-xs text-gray-400">
-                Connected to WhatsApp chat buttons and contact pages.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-gray-700 flex items-center gap-2">
-                <Mail size={14} className="text-gray-400" />
-                Support Email
-              </label>
-              <input
-                type="email"
-                value={supportEmail}
-                onChange={(e) => setSupportEmail(e.target.value)}
-                placeholder="hello@pinkfarm.in"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
-              />
-              <p className="text-xs text-gray-400">
-                Shown in the website footer and contact channels.
-              </p>
-            </div>
-
-            <div className="md:col-span-2 space-y-2">
-              <label className="block text-sm font-bold text-gray-700 flex items-center gap-2">
-                <MapPin size={14} className="text-gray-400" />
-                Farm / Business Address
-              </label>
-              <textarea
-                rows={2}
-                value={businessAddress}
-                onChange={(e) => setBusinessAddress(e.target.value)}
-                placeholder="123 Pink Farm Estate, New Delhi"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium resize-none"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Section 4: Delivery Fees & Free Shipping Rules */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-            <div className="p-2.5 rounded-lg bg-orange-50 text-orange-700">
-              <Truck size={20} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">Delivery Fees & Free Shipping Rules</h2>
-              <p className="text-sm text-gray-500">
-                Standard delivery charge and cart value required for complimentary free shipping.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-gray-700">
-                Standard Delivery Fee (₹)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">
-                  ₹
-                </span>
+              <label className="relative inline-flex items-center cursor-pointer select-none">
                 <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={deliveryFeeRupees}
-                  onChange={(e) => setDeliveryFeeRupees(e.target.value)}
-                  placeholder="50"
-                  className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
+                  type="checkbox"
+                  checked={isAcceptingOrders}
+                  onChange={(e) => setIsAcceptingOrders(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-green"></div>
+              </label>
+            </div>
+
+            <p className="text-xs text-gray-500">
+              {isAcceptingOrders ? (
+                <span className="text-emerald-700 font-medium">
+                  ✓ Store is actively taking orders. Cart & checkout are fully accessible.
+                </span>
+              ) : (
+                <span className="text-amber-700 font-medium">
+                  ⚠️ Orders are paused. Cart & checkout show polite pause notices.
+                </span>
+              )}
+            </p>
+          </div>
+
+          {/* Card 4: Customer Support & Contacts */}
+          <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-200/90 shadow-2xs space-y-3.5">
+            <div className="flex items-center gap-2 pb-2.5 border-b border-gray-100">
+              <Phone size={16} className="text-blue-600" />
+              <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+                Support & Contacts
+              </h2>
+            </div>
+
+            <div className="space-y-2.5">
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-600 flex items-center gap-1.5">
+                  <Phone size={11} className="text-gray-400" />
+                  Support Phone / WhatsApp
+                </label>
+                <input
+                  type="text"
+                  value={supportPhone}
+                  onChange={(e) => setSupportPhone(e.target.value)}
+                  placeholder="+91 8437504040"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm"
                 />
               </div>
-              <p className="text-xs text-gray-400">
-                Applied to cart totals during checkout when below free threshold.
-              </p>
-            </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-gray-700">
-                Free Delivery Order Threshold (₹)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">
-                  ₹
-                </span>
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-600 flex items-center gap-1.5">
+                  <Mail size={11} className="text-gray-400" />
+                  Support Email
+                </label>
                 <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={freeThresholdRupees}
-                  onChange={(e) => setFreeThresholdRupees(e.target.value)}
-                  placeholder="500"
-                  className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
+                  type="email"
+                  value={supportEmail}
+                  onChange={(e) => setSupportEmail(e.target.value)}
+                  placeholder="hello@pinkfarm.in"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm"
                 />
               </div>
-              <p className="text-xs text-gray-400">
-                Orders equal or exceeding this value receive 100% free delivery.
-              </p>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-600 flex items-center gap-1.5">
+                  <MapPin size={11} className="text-gray-400" />
+                  Business Address
+                </label>
+                <textarea
+                  rows={2}
+                  value={businessAddress}
+                  onChange={(e) => setBusinessAddress(e.target.value)}
+                  placeholder="123 Pink Farm Estate, New Delhi"
+                  className="w-full px-3 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-brand-green text-sm resize-none"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="bg-brand-pink/20 rounded-xl p-3.5 border border-brand-pink/30 text-xs text-brand-green font-medium">
-            💡 <strong>Current Rule:</strong> Shipping is ₹{deliveryFeeRupees || 0} for orders under ₹{freeThresholdRupees || 0}, and FREE for orders of ₹{freeThresholdRupees || 0} or more.
+          {/* Quick Save Card */}
+          <div className="p-3.5 bg-brand-pink/20 rounded-xl border border-brand-pink/40 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs text-brand-green font-medium">
+              <ShieldCheck size={16} className="text-brand-green shrink-0" />
+              <span>Real-time sync to DB & LocalStorage</span>
+            </div>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="px-4 py-2 rounded-lg bg-brand-green hover:bg-brand-green-dark text-white font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0 disabled:opacity-50"
+            >
+              {isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Save Settings"}
+            </button>
           </div>
-        </div>
 
-        {/* Bottom Save Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-            <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
-            <span>Settings apply in real time to cart, checkout, contacts, and header announcements.</span>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm shadow-md shadow-brand-green/20 transition-all cursor-pointer disabled:opacity-50"
-          >
-            {isSaving ? (
-              <RefreshCw size={16} className="animate-spin" />
-            ) : saveSuccess ? (
-              <CheckCircle2 size={16} className="text-emerald-300" />
-            ) : (
-              <Save size={16} />
-            )}
-            {isSaving ? "Saving..." : saveSuccess ? "Saved Successfully!" : "Save All Settings"}
-          </button>
         </div>
 
       </form>

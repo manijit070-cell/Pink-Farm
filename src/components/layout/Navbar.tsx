@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ShoppingCart, Search, Menu, X, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
@@ -15,7 +16,9 @@ export function Navbar() {
   const cartItems = useCartStore((state) => state.items);
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  const [announcement, setAnnouncement] = useState("Welcome to Pink Farm — Goodness in Every Bite.");
+  const announcementText = useSettingsStore((state) => state.announcementText);
+  const isAcceptingOrders = useSettingsStore((state) => state.isAcceptingOrders);
+  const storeName = useSettingsStore((state) => state.storeName);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,21 +26,8 @@ export function Navbar() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    const syncSettings = () => {
-      try {
-        const stored = localStorage.getItem("pinkfarm_store_settings");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed.announcementText) setAnnouncement(parsed.announcementText);
-        }
-      } catch {}
-    };
-    syncSettings();
-    window.addEventListener("storage", syncSettings);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("storage", syncSettings);
     };
   }, []);
 
@@ -52,8 +42,13 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full transition-all duration-300">
       
       {/* Premium Announcement Bar */}
-      <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-2 text-xs md:text-sm font-medium tracking-wide flex justify-center items-center overflow-hidden">
-        <span className="animate-pulse">✨ {announcement}</span>
+      <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-2 text-xs md:text-sm font-medium tracking-wide flex justify-center items-center overflow-hidden px-4">
+        <span className="animate-pulse">✨ {announcementText || "Welcome to Pink Farm — Goodness in Every Bite."}</span>
+        {!isAcceptingOrders && (
+          <span className="ml-3 bg-amber-500 text-brand-charcoal text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+            Orders Paused
+          </span>
+        )}
       </div>
 
       {/* Main Navigation Bar */}
@@ -84,7 +79,7 @@ export function Navbar() {
             >
               <Image 
                 src="/lotus-logo-gold.png" 
-                alt="Pink Farm Logo" 
+                alt={`${storeName || "Pink Farm"} Logo`} 
                 width={180} 
                 height={180} 
                 quality={100}
@@ -95,7 +90,7 @@ export function Navbar() {
               />
             </motion.div>
             <span className="font-serif text-3xl md:text-4xl font-extrabold text-brand-green tracking-tight group-hover:scale-105 transition-transform duration-300">
-              Pink Farm
+              {storeName || "Pink Farm"}
             </span>
           </Link>
 

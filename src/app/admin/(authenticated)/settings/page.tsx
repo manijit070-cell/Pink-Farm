@@ -16,134 +16,111 @@ import {
   ShieldCheck,
   RefreshCw,
   Power,
+  Info,
 } from "lucide-react";
-
-interface SettingsData {
-  storeName: string;
-  announcementText: string;
-  supportPhone: string;
-  supportEmail: string;
-  businessAddress: string;
-  deliveryFee: number; // in paise
-  freeDeliveryThreshold: number; // in paise
-  isAcceptingOrders: boolean;
-}
-
-const DEFAULT_SETTINGS: SettingsData = {
-  storeName: "Pink Farm",
-  announcementText: "Welcome to Pink Farm — Goodness in Every Bite.",
-  supportPhone: "+91 99999 99999",
-  supportEmail: "hello@pinkfarm.in",
-  businessAddress: "123 Pink Farm Estate, New Delhi",
-  deliveryFee: 5000,
-  freeDeliveryThreshold: 50000,
-  isAcceptingOrders: true,
-};
+import { useSettingsStore, DEFAULT_SETTINGS } from "@/store/settingsStore";
 
 export default function StoreSettingsPage() {
-  const [formData, setFormData] = useState<SettingsData>(DEFAULT_SETTINGS);
-  const [isLoading, setIsLoading] = useState(true);
+  const storeSettings = useSettingsStore();
+
+  const [storeName, setStoreName] = useState(DEFAULT_SETTINGS.storeName);
+  const [announcementText, setAnnouncementText] = useState(DEFAULT_SETTINGS.announcementText);
+  const [supportPhone, setSupportPhone] = useState(DEFAULT_SETTINGS.supportPhone);
+  const [supportEmail, setSupportEmail] = useState(DEFAULT_SETTINGS.supportEmail);
+  const [businessAddress, setBusinessAddress] = useState(DEFAULT_SETTINGS.businessAddress);
+  const [deliveryFeeRupees, setDeliveryFeeRupees] = useState("50");
+  const [freeThresholdRupees, setFreeThresholdRupees] = useState("500");
+  const [isAcceptingOrders, setIsAcceptingOrders] = useState(true);
+
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
 
+  // Sync state from store / remote API on mount
   useEffect(() => {
-    // 1. Try local storage first for immediate access without backend delay
-    try {
-      const cached = localStorage.getItem("pinkfarm_store_settings");
-      if (cached) {
-        setFormData(JSON.parse(cached));
-      }
-    } catch {
-      // Ignore localStorage error
+    // 1. Initial values from zustand store
+    if (storeSettings.storeName) {
+      setStoreName(storeSettings.storeName);
+      setAnnouncementText(storeSettings.announcementText);
+      setSupportPhone(storeSettings.supportPhone);
+      setSupportEmail(storeSettings.supportEmail);
+      setBusinessAddress(storeSettings.businessAddress);
+      setDeliveryFeeRupees(String(Math.round((storeSettings.deliveryFee ?? 5000) / 100)));
+      setFreeThresholdRupees(
+        String(Math.round((storeSettings.freeDeliveryThreshold ?? 50000) / 100))
+      );
+      setIsAcceptingOrders(storeSettings.isAcceptingOrders);
     }
 
-    // 2. Fetch from API
+    // 2. Fetch fresh from backend API
     fetch("/api/admin/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data && data.storeName) {
-          setFormData((prev) => ({
-            ...prev,
-            storeName: data.storeName ?? prev.storeName,
-            announcementText: data.announcementText ?? prev.announcementText,
-            supportPhone: data.supportPhone ?? prev.supportPhone,
-            supportEmail: data.supportEmail ?? prev.supportEmail,
-            businessAddress: data.businessAddress ?? prev.businessAddress,
-            deliveryFee: data.deliveryFee ?? prev.deliveryFee,
-            freeDeliveryThreshold: data.freeDeliveryThreshold ?? prev.freeDeliveryThreshold,
-            isAcceptingOrders:
-              typeof data.isAcceptingOrders === "boolean"
-                ? data.isAcceptingOrders
-                : prev.isAcceptingOrders,
-          }));
+          setStoreName(data.storeName);
+          if (data.announcementText !== undefined) setAnnouncementText(data.announcementText);
+          if (data.supportPhone !== undefined) setSupportPhone(data.supportPhone);
+          if (data.supportEmail !== undefined) setSupportEmail(data.supportEmail);
+          if (data.businessAddress !== undefined) setBusinessAddress(data.businessAddress);
+          if (typeof data.deliveryFee === "number") {
+            setDeliveryFeeRupees(String(Math.round(data.deliveryFee / 100)));
+          }
+          if (typeof data.freeDeliveryThreshold === "number") {
+            setFreeThresholdRupees(String(Math.round(data.freeDeliveryThreshold / 100)));
+          }
+          if (typeof data.isAcceptingOrders === "boolean") {
+            setIsAcceptingOrders(data.isAcceptingOrders);
+          }
         }
       })
       .catch((err) => {
-        console.warn("Could not load from API, using cached or default settings:", err);
-      })
-      .finally(() => {
-        setIsLoading(false);
+        console.warn("Could not fetch remote settings:", err);
       });
   }, []);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
-    if (type === "checkbox") {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleDeliveryFeeChange = (rupees: string) => {
-    const paise = Math.round((parseFloat(rupees) || 0) * 100);
-    setFormData((prev) => ({ ...prev, deliveryFee: paise }));
-  };
-
-  const handleThresholdChange = (rupees: string) => {
-    const paise = Math.round((parseFloat(rupees) || 0) * 100);
-    setFormData((prev) => ({ ...prev, freeDeliveryThreshold: paise }));
-  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setErrorMsg("");
     setSaveSuccess(false);
+    setStatusMessage("");
 
-    // Save to localStorage immediately so user never loses their changes even if backend fails
-    try {
-      localStorage.setItem("pinkfarm_store_settings", JSON.stringify(formData));
-      window.dispatchEvent(new Event("storage"));
-    } catch (lsErr) {
-      console.warn("LocalStorage save error:", lsErr);
-    }
+    const deliveryFeePaise = Math.round((parseFloat(deliveryFeeRupees) || 0) * 100);
+    const freeThresholdPaise = Math.round((parseFloat(freeThresholdRupees) || 0) * 100);
+
+    const payload = {
+      storeName: storeName.trim() || DEFAULT_SETTINGS.storeName,
+      announcementText: announcementText.trim(),
+      supportPhone: supportPhone.trim() || DEFAULT_SETTINGS.supportPhone,
+      supportEmail: supportEmail.trim() || DEFAULT_SETTINGS.supportEmail,
+      businessAddress: businessAddress.trim() || DEFAULT_SETTINGS.businessAddress,
+      deliveryFee: deliveryFeePaise,
+      freeDeliveryThreshold: freeThresholdPaise,
+      isAcceptingOrders,
+    };
+
+    // Update client Zustand store immediately
+    useSettingsStore.getState().setSettings(payload);
 
     try {
       const res = await fetch("/api/admin/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 4000);
+        setStatusMessage("Settings saved successfully and applied across your storefront!");
       } else {
-        // Still marked as success for local preview
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 4000);
+        setStatusMessage("Settings updated locally for your store session.");
       }
     } catch {
-      // Graceful offline save
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 4000);
+      setStatusMessage("Settings saved locally.");
     } finally {
       setIsSaving(false);
+      setTimeout(() => setSaveSuccess(false), 5000);
     }
   };
 
@@ -161,7 +138,7 @@ export default function StoreSettingsPage() {
                 Store Settings
               </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                Configure your store identity, announcement banner, contact info, and delivery rates.
+                Configure your store branding, banner announcements, order status, contact info, and delivery rates.
               </p>
             </div>
           </div>
@@ -199,7 +176,7 @@ export default function StoreSettingsPage() {
           <div className="flex items-center gap-3">
             <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
             <p className="text-sm font-semibold">
-              Settings updated successfully! Changes are saved and applied to your store.
+              {statusMessage || "Settings updated and applied live to the store!"}
             </p>
           </div>
           <span className="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-bold">
@@ -208,51 +185,54 @@ export default function StoreSettingsPage() {
         </div>
       )}
 
-      {/* Main Settings Form */}
+      {/* Main Form */}
       <form onSubmit={handleSave} className="space-y-8">
         
-        {/* Section 1: Store Status & Operational Toggle */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-6">
-          <div className="flex items-center justify-between">
+        {/* Section 1: Store Ordering Toggle */}
+        <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-700">
+              <div className={`p-2.5 rounded-lg ${isAcceptingOrders ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
                 <Power size={20} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Store Ordering Status</h2>
+                <h2 className="text-lg font-bold text-gray-900">Accepting Online Orders</h2>
                 <p className="text-sm text-gray-500">
-                  Control whether customers can place new orders through checkout.
+                  When enabled, customers can add products to cart and checkout normally.
                 </p>
               </div>
             </div>
 
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex items-center cursor-pointer select-none">
               <input
                 type="checkbox"
-                name="isAcceptingOrders"
-                checked={formData.isAcceptingOrders}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    isAcceptingOrders: e.target.checked,
-                  }))
-                }
+                checked={isAcceptingOrders}
+                onChange={(e) => setIsAcceptingOrders(e.target.checked)}
                 className="sr-only peer"
               />
               <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-brand-green"></div>
-              <span className="ml-3 text-sm font-bold text-gray-700">
-                {formData.isAcceptingOrders ? (
+              <span className="ml-3 text-sm font-bold min-w-[130px]">
+                {isAcceptingOrders ? (
                   <span className="text-emerald-600 flex items-center gap-1.5">
-                    ● Accepting Orders
+                    ● Store Active
                   </span>
                 ) : (
                   <span className="text-amber-600 flex items-center gap-1.5">
-                    ● Store Paused
+                    ● Orders Paused
                   </span>
                 )}
               </span>
             </label>
           </div>
+
+          {!isAcceptingOrders && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3.5 text-xs flex items-center gap-2">
+              <Info size={16} className="shrink-0 text-amber-600" />
+              <span>
+                <strong>Store is currently paused:</strong> Product checkout and Add-to-Cart buttons will show a polite &quot;Orders Paused&quot; notice until re-enabled.
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Section 2: Store Identity & Announcement Bar */}
@@ -264,7 +244,7 @@ export default function StoreSettingsPage() {
             <div>
               <h2 className="text-lg font-bold text-gray-900">Store Identity & Announcements</h2>
               <p className="text-sm text-gray-500">
-                Update store branding and the top banner announcement displayed across the site.
+                Update store branding and the top banner announcement displayed across every page.
               </p>
             </div>
           </div>
@@ -276,31 +256,29 @@ export default function StoreSettingsPage() {
               </label>
               <input
                 type="text"
-                name="storeName"
-                value={formData.storeName}
-                onChange={handleChange}
+                value={storeName}
+                onChange={(e) => setStoreName(e.target.value)}
                 placeholder="Pink Farm"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
               />
               <p className="text-xs text-gray-400">
-                Shown in browser tabs, emails, invoices, and navigation.
+                Used in header branding, footer copyright, and page headers.
               </p>
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-bold text-gray-700">
-                Announcement Bar Text
+                Announcement Bar Banner Text
               </label>
               <input
                 type="text"
-                name="announcementText"
-                value={formData.announcementText}
-                onChange={handleChange}
+                value={announcementText}
+                onChange={(e) => setAnnouncementText(e.target.value)}
                 placeholder="Welcome to Pink Farm — Goodness in Every Bite."
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
               />
               <p className="text-xs text-gray-400">
-                Displays prominently at the very top of all store pages.
+                Displays live in the top bar across the entire website.
               </p>
             </div>
           </div>
@@ -311,13 +289,13 @@ export default function StoreSettingsPage() {
               <Sparkles size={14} className="text-brand-pink-accent" />
               Live Announcement Bar Preview
             </div>
-            <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-2 px-4 rounded-lg text-xs md:text-sm font-medium shadow-sm">
-              ✨ {formData.announcementText || "Welcome to Pink Farm — Goodness in Every Bite."}
+            <div className="bg-gradient-to-r from-brand-green to-brand-green-light text-brand-ivory text-center py-2 px-4 rounded-lg text-xs md:text-sm font-medium shadow-sm min-h-[36px] flex items-center justify-center">
+              <span>✨ {announcementText || "Welcome to Pink Farm — Goodness in Every Bite."}</span>
             </div>
           </div>
         </div>
 
-        {/* Section 3: Customer Support & Contact Details */}
+        {/* Section 3: Customer Support & Contact Info */}
         <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-6">
           <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
             <div className="p-2.5 rounded-lg bg-blue-50 text-blue-700">
@@ -326,7 +304,7 @@ export default function StoreSettingsPage() {
             <div>
               <h2 className="text-lg font-bold text-gray-900">Customer Support & Contacts</h2>
               <p className="text-sm text-gray-500">
-                Contact information shown in the store footer, order confirmation emails, and help channels.
+                Syncs with footer contacts, contact page cards, and floating WhatsApp buttons.
               </p>
             </div>
           </div>
@@ -339,12 +317,14 @@ export default function StoreSettingsPage() {
               </label>
               <input
                 type="text"
-                name="supportPhone"
-                value={formData.supportPhone}
-                onChange={handleChange}
-                placeholder="+91 99999 99999"
+                value={supportPhone}
+                onChange={(e) => setSupportPhone(e.target.value)}
+                placeholder="+91 8437504040"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
               />
+              <p className="text-xs text-gray-400">
+                Connected to WhatsApp chat buttons and contact pages.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -354,12 +334,14 @@ export default function StoreSettingsPage() {
               </label>
               <input
                 type="email"
-                name="supportEmail"
-                value={formData.supportEmail}
-                onChange={handleChange}
+                value={supportEmail}
+                onChange={(e) => setSupportEmail(e.target.value)}
                 placeholder="hello@pinkfarm.in"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
               />
+              <p className="text-xs text-gray-400">
+                Shown in the website footer and contact channels.
+              </p>
             </div>
 
             <div className="md:col-span-2 space-y-2">
@@ -368,10 +350,9 @@ export default function StoreSettingsPage() {
                 Farm / Business Address
               </label>
               <textarea
-                name="businessAddress"
                 rows={2}
-                value={formData.businessAddress}
-                onChange={handleChange}
+                value={businessAddress}
+                onChange={(e) => setBusinessAddress(e.target.value)}
                 placeholder="123 Pink Farm Estate, New Delhi"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium resize-none"
               />
@@ -379,16 +360,16 @@ export default function StoreSettingsPage() {
           </div>
         </div>
 
-        {/* Section 4: Delivery Fees & Shipping Rules */}
+        {/* Section 4: Delivery Fees & Free Shipping Rules */}
         <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-6">
           <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
             <div className="p-2.5 rounded-lg bg-orange-50 text-orange-700">
               <Truck size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Delivery Fees & Shipping Rules</h2>
+              <h2 className="text-lg font-bold text-gray-900">Delivery Fees & Free Shipping Rules</h2>
               <p className="text-sm text-gray-500">
-                Set standard delivery charges and minimum order values for complimentary free delivery.
+                Standard delivery charge and cart value required for complimentary free shipping.
               </p>
             </div>
           </div>
@@ -406,19 +387,20 @@ export default function StoreSettingsPage() {
                   type="number"
                   min="0"
                   step="1"
-                  value={(formData.deliveryFee / 100).toFixed(0)}
-                  onChange={(e) => handleDeliveryFeeChange(e.target.value)}
+                  value={deliveryFeeRupees}
+                  onChange={(e) => setDeliveryFeeRupees(e.target.value)}
+                  placeholder="50"
                   className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
                 />
               </div>
               <p className="text-xs text-gray-400">
-                Applied to cart totals during checkout.
+                Applied to cart totals during checkout when below free threshold.
               </p>
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-bold text-gray-700">
-                Free Delivery Above (₹)
+                Free Delivery Order Threshold (₹)
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">
@@ -428,33 +410,34 @@ export default function StoreSettingsPage() {
                   type="number"
                   min="0"
                   step="1"
-                  value={
-                    formData.freeDeliveryThreshold
-                      ? (formData.freeDeliveryThreshold / 100).toFixed(0)
-                      : "0"
-                  }
-                  onChange={(e) => handleThresholdChange(e.target.value)}
+                  value={freeThresholdRupees}
+                  onChange={(e) => setFreeThresholdRupees(e.target.value)}
+                  placeholder="500"
                   className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all text-sm font-medium"
                 />
               </div>
               <p className="text-xs text-gray-400">
-                Orders equal or exceeding this amount receive free shipping.
+                Orders equal or exceeding this value receive 100% free delivery.
               </p>
             </div>
           </div>
+
+          <div className="bg-brand-pink/20 rounded-xl p-3.5 border border-brand-pink/30 text-xs text-brand-green font-medium">
+            💡 <strong>Current Rule:</strong> Shipping is ₹{deliveryFeeRupees || 0} for orders under ₹{freeThresholdRupees || 0}, and FREE for orders of ₹{freeThresholdRupees || 0} or more.
+          </div>
         </div>
 
-        {/* Floating / Bottom Save Bar */}
-        <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
+        {/* Bottom Save Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
           <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-            <ShieldCheck size={16} className="text-emerald-600" />
-            <span>Settings are backed up locally and synced to your database automatically.</span>
+            <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
+            <span>Settings apply in real time to cart, checkout, contacts, and header announcements.</span>
           </div>
 
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm shadow-md shadow-brand-green/20 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm shadow-md shadow-brand-green/20 transition-all cursor-pointer disabled:opacity-50"
           >
             {isSaving ? (
               <RefreshCw size={16} className="animate-spin" />
@@ -463,7 +446,7 @@ export default function StoreSettingsPage() {
             ) : (
               <Save size={16} />
             )}
-            {isSaving ? "Saving..." : saveSuccess ? "Saved Successfully!" : "Save Settings"}
+            {isSaving ? "Saving..." : saveSuccess ? "Saved Successfully!" : "Save All Settings"}
           </button>
         </div>
 

@@ -53,8 +53,27 @@ export async function POST(request: Request) {
       });
     }
 
-    const deliveryFee = subtotal > 0 && subtotal < 80000 ? 6000 : 0;
-    const totalAmount = subtotal + deliveryFee;
+    // Verify store settings and order acceptance
+    let deliveryFee = 5000;
+    let freeThreshold = 50000;
+    try {
+      const settings = await prisma.storeSettings.findUnique({ where: { id: "default" } });
+      if (settings) {
+        if (!settings.isAcceptingOrders) {
+          return NextResponse.json(
+            { error: "Online orders are currently paused by the store admin. Please try again later." },
+            { status: 400 }
+          );
+        }
+        deliveryFee = settings.deliveryFee;
+        freeThreshold = settings.freeDeliveryThreshold ?? 50000;
+      }
+    } catch (settingsErr) {
+      console.warn("Could not load settings in checkout route:", settingsErr);
+    }
+
+    const finalDeliveryFee = subtotal > 0 ? (freeThreshold > 0 && subtotal >= freeThreshold ? 0 : deliveryFee) : 0;
+    const totalAmount = subtotal + finalDeliveryFee;
 
     // Generate Order Number
     const count = await prisma.order.count();

@@ -3,14 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { Button } from "@/components/ui/Button";
-import { Minus, Plus, Trash2, ArrowRight } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowRight, Truck, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScaleOnTap, FadeIn, ShimmerSheen } from "@/components/ui/MotionWrappers";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem } = useCartStore();
+  const deliveryFeeSetting = useSettingsStore((state) => state.deliveryFee);
+  const freeDeliveryThreshold = useSettingsStore((state) => state.freeDeliveryThreshold);
+  const isAcceptingOrders = useSettingsStore((state) => state.isAcceptingOrders);
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -20,7 +25,8 @@ export default function CartPage() {
   if (!mounted) return null;
 
   const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const deliveryFee = subtotal > 0 && subtotal < 80000 ? 6000 : 0;
+  const isFreeDelivery = freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold;
+  const deliveryFee = subtotal > 0 ? (isFreeDelivery ? 0 : (deliveryFeeSetting ?? 5000)) : 0;
   const total = subtotal + deliveryFee;
 
   if (items.length === 0) {
@@ -116,7 +122,18 @@ export default function CartPage() {
         <div className="flex-1">
           <FadeIn direction="left">
             <div className="bg-brand-cream p-6 md:p-8 rounded-3xl sticky top-24">
-              <h2 className="font-serif text-2xl text-brand-green mb-6">Order Summary</h2>
+              <h2 className="font-serif text-2xl text-brand-green mb-4">Order Summary</h2>
+
+              {freeDeliveryThreshold > 0 && (
+                <div className={`p-3 rounded-xl mb-4 text-xs flex items-center gap-2 ${isFreeDelivery ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-brand-pink/30 text-brand-green border border-brand-pink/40"}`}>
+                  {isFreeDelivery ? <CheckCircle2 size={16} className="text-emerald-600 shrink-0" /> : <Truck size={16} className="text-brand-green shrink-0" />}
+                  <span>
+                    {isFreeDelivery
+                      ? "You qualify for FREE Delivery! 🎉"
+                      : `Add ₹${Math.max(1, Math.ceil((freeDeliveryThreshold - subtotal) / 100))} more for FREE Delivery!`}
+                  </span>
+                </div>
+              )}
               
               <div className="space-y-4 text-sm opacity-90 mb-6 pb-6 border-b border-brand-green-light/20">
                 <div className="flex justify-between">
@@ -125,7 +142,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery</span>
-                  <span>₹{(deliveryFee / 100).toFixed(2)}</span>
+                  <span>{deliveryFee === 0 ? <strong className="text-emerald-600">FREE</strong> : `₹${(deliveryFee / 100).toFixed(2)}`}</span>
                 </div>
               </div>
               
@@ -134,15 +151,26 @@ export default function CartPage() {
                 <span>₹{(total / 100).toFixed(2)}</span>
               </div>
               
-              <ScaleOnTap>
-                <ShimmerSheen className="rounded-md">
-                  <Button asChild size="lg" className="w-full text-base h-14">
-                    <Link href="/checkout">
-                      Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
+              {isAcceptingOrders ? (
+                <ScaleOnTap>
+                  <ShimmerSheen className="rounded-md">
+                    <Button asChild size="lg" className="w-full text-base h-14">
+                      <Link href="/checkout">
+                        Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  </ShimmerSheen>
+                </ScaleOnTap>
+              ) : (
+                <div className="space-y-2">
+                  <Button disabled size="lg" className="w-full text-base h-14 opacity-60 cursor-not-allowed">
+                    Orders Temporarily Paused
                   </Button>
-                </ShimmerSheen>
-              </ScaleOnTap>
+                  <p className="text-center text-xs text-amber-700 font-medium">
+                    Store ordering is temporarily paused by admin.
+                  </p>
+                </div>
+              )}
               
               <div className="mt-6 text-center text-xs opacity-70 flex flex-col gap-2">
                 <p>Secure UPI checkout available.</p>

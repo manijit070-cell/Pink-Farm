@@ -2,14 +2,19 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { useSettingsStore } from "@/store/settingsStore";
 
 export function FloatingSocials() {
+  const supportPhone = useSettingsStore((state) => state.supportPhone);
+  const cleanPhone = (supportPhone || "8437504040").replace(/[^0-9]/g, "");
+  const whatsappUrl = `https://wa.me/${cleanPhone.startsWith("91") ? cleanPhone : `91${cleanPhone}`}`;
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3.5 pointer-events-auto">
       
       {/* WhatsApp Button */}
       <motion.a 
-        href="https://wa.me/918437504040" 
+        href={whatsappUrl} 
         target="_blank" 
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}

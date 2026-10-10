@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +19,7 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
+  const isAcceptingOrders = useSettingsStore((state) => state.isAcceptingOrders);
   const router = useRouter();
 
   const currentPrice = selectedVariant ? selectedVariant.price : product.basePrice;
@@ -25,6 +27,7 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
   const maxQty = Math.min(10, currentStock);
   
   const isOutOfStock = currentStock <= 0 || !product.isAvailable || (selectedVariant && !selectedVariant.isAvailable);
+  const isDisabled = isOutOfStock || !isAcceptingOrders;
 
   const handleAddToCart = () => {
     if (isOutOfStock) return;
@@ -139,12 +142,16 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
             size="lg" 
             className={`w-full px-8 h-14 text-lg transition-colors ${added ? 'bg-green-600 hover:bg-green-700 text-white' : ''}`}
             onClick={handleAddToCart}
-            disabled={isOutOfStock}
+            disabled={isDisabled}
             variant="outline"
           >
             {added ? (
               <>
                 <Check className="mr-2 h-5 w-5" /> Added to Cart
+              </>
+            ) : !isAcceptingOrders ? (
+              <>
+                <ShoppingCart className="mr-2 h-5 w-5" /> Orders Paused
               </>
             ) : (
               <>
@@ -158,18 +165,24 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
           <ShimmerSheen className="rounded-md">
             <Button 
               size="lg" 
-              className="w-full px-8 h-14 text-lg bg-brand-pink text-brand-green font-bold hover:bg-brand-pink/90"
+              className="w-full px-8 h-14 text-lg bg-brand-pink text-brand-green font-bold hover:bg-brand-pink/90 disabled:opacity-50"
               onClick={() => {
                 handleAddToCart();
                 router.push('/checkout');
               }}
-              disabled={isOutOfStock}
+              disabled={isDisabled}
             >
-              Buy Now
+              {!isAcceptingOrders ? "Ordering Paused" : "Buy Now"}
             </Button>
           </ShimmerSheen>
         </ScaleOnTap>
       </div>
+
+      {!isAcceptingOrders && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3 text-xs text-center font-medium">
+          🔔 Store ordering is temporarily paused. You can still browse our products!
+        </div>
+      )}
     </div>
   );
 }

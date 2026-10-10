@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useCartStore } from "@/store/cartStore";
+import { useSettingsStore } from "@/store/settingsStore";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -54,11 +55,20 @@ export function CheckoutClient() {
     return null;
   }
 
+  const deliveryFeeSetting = useSettingsStore((state) => state.deliveryFee);
+  const freeDeliveryThreshold = useSettingsStore((state) => state.freeDeliveryThreshold);
+  const isAcceptingOrders = useSettingsStore((state) => state.isAcceptingOrders);
+
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const deliveryFee = subtotal > 0 && subtotal < 80000 ? 6000 : 0;
+  const isFreeDelivery = freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold;
+  const deliveryFee = subtotal > 0 ? (isFreeDelivery ? 0 : (deliveryFeeSetting ?? 5000)) : 0;
   const total = subtotal + deliveryFee;
 
   const onSubmit = async (data: CheckoutFormValues) => {
+    if (!isAcceptingOrders) {
+      setError("Online orders are currently paused by the store admin. Please try again later.");
+      return;
+    }
     setIsProcessing(true);
     setError("");
 
@@ -225,7 +235,7 @@ export function CheckoutClient() {
             </div>
             <div className="flex justify-between">
               <span>Delivery</span>
-              <span>₹{(deliveryFee / 100).toFixed(2)}</span>
+              <span>{deliveryFee === 0 ? <strong className="text-emerald-600">FREE</strong> : `₹${(deliveryFee / 100).toFixed(2)}`}</span>
             </div>
           </div>
           
@@ -250,9 +260,9 @@ export function CheckoutClient() {
             form="checkout-form"
             size="lg" 
             className="w-full text-base h-14"
-            disabled={isProcessing}
+            disabled={isProcessing || !isAcceptingOrders}
           >
-            {isProcessing ? "Processing..." : `Pay ₹${(total / 100).toFixed(2)}`}
+            {isProcessing ? "Processing..." : !isAcceptingOrders ? "Orders Temporarily Paused" : `Pay ₹${(total / 100).toFixed(2)}`}
           </Button>
         </div>
       </div>

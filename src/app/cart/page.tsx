@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScaleOnTap, FadeIn, ShimmerSheen } from "@/components/ui/MotionWrappers";
 import { formatPrice } from "@/lib/utils";
+import { CuteAnimatedGiftIcon } from "@/components/checkout/CuteSurpriseGift";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem } = useCartStore();
@@ -117,6 +118,29 @@ export default function CartPage() {
               </motion.div>
             ))}
           </AnimatePresence>
+
+          {/* Complimentary Surprise Gift Banner in Cart */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-pink-50 via-rose-50/70 to-amber-50/80 border border-pink-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-3">
+              <div className="shrink-0 bg-white p-1 rounded-xl border border-pink-200 shadow-xs">
+                <CuteAnimatedGiftIcon size="sm" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-serif font-bold text-sm text-brand-green">Surprise Gift Included! 🎁</h3>
+                  <span className="text-[10px] font-extrabold uppercase bg-rose-600 text-white px-2 py-0.5 rounded-full">
+                    100% Free
+                  </span>
+                </div>
+                <p className="text-xs text-brand-charcoal/75 mt-0.5">
+                  A complimentary treat is automatically included with every order. Listed at checkout!
+                </p>
+              </div>
+            </div>
+            <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
+              ₹0 (Free)
+            </span>
+          </div>
         </div>
 
         {/* Order Summary */}
@@ -140,6 +164,13 @@ export default function CartPage() {
                 <div className="flex justify-between">
                   <span>Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} items)</span>
                   <span>₹{formatPrice(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-emerald-700 font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <span>Surprise Gift 🎁</span>
+                    <span className="text-[10px] bg-pink-100 text-rose-700 font-bold px-1.5 py-0.5 rounded-full">Included</span>
+                  </span>
+                  <span className="font-bold">FREE</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery</span>

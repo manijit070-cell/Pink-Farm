@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { CheckCircle2, Clock, Package, Truck, Home, Printer } from "lucide-react";
+import { CuteAnimatedGiftIcon } from "@/components/checkout/CuteSurpriseGift";
 
 
 
@@ -128,12 +129,39 @@ export default async function OrderPage({
               <span className="font-medium">₹{(item.subtotal / 100).toFixed(2)}</span>
             </div>
           ))}
+
+          {/* Surprise Gift Entry */}
+          <div className="flex justify-between items-center bg-gradient-to-r from-pink-50/90 via-rose-50/50 to-amber-50/60 p-3 rounded-2xl border border-pink-200/80">
+            <div className="flex gap-3 items-center">
+              <span className="font-bold text-xs bg-rose-600 text-white px-2 py-0.5 rounded-md shadow-xs">1x</span>
+              <div className="flex items-center gap-2.5">
+                <div className="bg-white p-0.5 rounded-xl border border-pink-200 shadow-xs">
+                  <CuteAnimatedGiftIcon size="sm" interactive={false} />
+                </div>
+                <div>
+                  <span className="font-medium text-brand-green text-sm flex items-center gap-1.5 font-bold">
+                    Surprise Gift 🎁
+                    <span className="text-[10px] font-sans font-extrabold uppercase bg-rose-500 text-white px-1.5 py-0.2 rounded-full">Free</span>
+                  </span>
+                  <p className="text-[11px] text-brand-charcoal/70">Complimentary handpicked treat inside your box</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 text-right">
+              <span className="text-xs text-brand-charcoal/40 line-through">₹149.00</span>
+              <span className="font-bold text-xs text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">FREE</span>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-2 border-t border-brand-green-light/20 pt-6 text-sm">
           <div className="flex justify-between opacity-80">
             <span>Subtotal</span>
             <span>₹{(order.subtotal / 100).toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-emerald-700 font-medium">
+            <span>Surprise Gift 🎁 (1x)</span>
+            <span className="font-bold">FREE</span>
           </div>
           <div className="flex justify-between opacity-80">
             <span>Delivery</span>

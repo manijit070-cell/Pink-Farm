@@ -206,6 +206,26 @@ export default async function OrderSlipPage({
                   </td>
                 </tr>
               ))}
+              <tr className="border-b border-gray-300 bg-pink-50/30 print:bg-transparent">
+                <td className="py-1.5 px-2.5 text-center border-r border-black font-mono text-[10px]">
+                  🎁
+                </td>
+                <td className="py-1.5 px-2.5 border-r border-black font-semibold text-black text-[11px]">
+                  Surprise Gift (Complimentary Free Treat) 🎁
+                </td>
+                <td className="py-1.5 px-2.5 text-center border-r border-black text-gray-700 text-[10px]">
+                  Free Gift
+                </td>
+                <td className="py-1.5 px-2.5 text-center border-r border-black font-bold text-[11px]">
+                  1
+                </td>
+                <td className="py-1.5 px-2.5 text-right border-r border-black font-mono text-[11px] line-through text-gray-400 print:text-black">
+                  ₹149.00
+                </td>
+                <td className="py-1.5 px-2.5 text-right font-bold font-mono text-[11px] text-emerald-700 print:text-black">
+                  FREE
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

@@ -24,6 +24,7 @@ import {
   Crosshair,
   AlertCircle
 } from "lucide-react";
+import { SurpriseGiftCheckoutRow } from "@/components/checkout/CuteSurpriseGift";
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -680,9 +681,9 @@ export function CheckoutClient() {
         <div className="bg-brand-cream p-6 md:p-8 rounded-3xl sticky top-24 border border-brand-green-light/10 shadow-sm">
           <h2 className="font-serif text-2xl text-brand-green mb-6 font-bold">Review &amp; Pay</h2>
           
-          <div className="space-y-4 mb-6 pb-6 border-b border-brand-green-light/20 max-h-60 overflow-y-auto pr-2">
+          <div className="space-y-3.5 mb-6 pb-6 border-b border-brand-green-light/20 max-h-80 overflow-y-auto pr-1">
             {items.map(item => (
-              <div key={`${item.id}-${item.variantId}`} className="flex justify-between text-sm">
+              <div key={`${item.id}-${item.variantId}`} className="flex justify-between text-sm py-0.5">
                 <div className="flex gap-3">
                   <span className="font-bold text-brand-green">{item.quantity}x</span>
                   <div>
@@ -693,6 +694,9 @@ export function CheckoutClient() {
                 <span className="font-medium">₹{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
+
+            {/* Surprise Gift automatically listed with products with cute animation */}
+            <SurpriseGiftCheckoutRow />
           </div>
           
           {/* Coupon Code Section */}
@@ -744,6 +748,13 @@ export function CheckoutClient() {
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>₹{formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-emerald-700 font-medium">
+              <span className="flex items-center gap-1.5">
+                <span>Surprise Gift 🎁</span>
+                <span className="text-[10px] bg-pink-100 text-rose-700 font-bold px-1.5 py-0.5 rounded-full">Included</span>
+              </span>
+              <span className="font-bold">FREE</span>
             </div>
             {discountAmount > 0 && (
               <div className="flex justify-between text-emerald-700 font-bold">

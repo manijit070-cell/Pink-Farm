@@ -137,7 +137,7 @@ export const FALLBACK_PRODUCTS: StoreProduct[] = [
     isFeatured: true,
     tags: "[]",
     ingredients: null,
-    nutritionalInfo: null,
+    nutritionalInfo: "7.19g Protein per 100g",
     storage: null,
     allergens: null,
     deliveryNotes: null,

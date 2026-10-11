@@ -38,7 +38,7 @@ export function AddToCart({ product, variants }: { product: Product; variants: V
     const s = `${slug} ${name}`.toLowerCase();
     if (s.includes("peri-peri") || s.includes("peri peri")) return "7.8 g protein per 100 gm";
     if (s.includes("pudina")) return "7.2 g protein per 100 gm";
-    if (s.includes("punjabi")) return "7.1 g protein per 100 gm";
+    if (s.includes("punjabi")) return "7.19g protein per 100 gm";
     if (s.includes("caramel") || s.includes("gud") || s.includes("gur")) return "6.2 gm protein per 100 gm";
     if (s.includes("himalayan") || s.includes("salted")) return "7.4 g protein per 100 gm";
     if (s.includes("raw") || s.includes("phool")) return "9.7 g protein per 100 gm";

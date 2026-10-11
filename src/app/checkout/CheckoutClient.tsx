@@ -99,8 +99,29 @@ export function CheckoutClient() {
     script.async = true;
     document.body.appendChild(script);
 
-    // Auto-fill previous guest address from localStorage if available
+    // Auto-fill from logged-in customer's saved address or guest address from localStorage
     try {
+      const custStoreStr = localStorage.getItem("pinkfarm_customer_store_v1");
+      if (custStoreStr) {
+        const parsedStore = JSON.parse(custStoreStr);
+        const addresses = parsedStore.state?.addresses || [];
+        const defaultAddr = addresses.find((a: any) => a.isDefault) || addresses[0];
+        if (defaultAddr && defaultAddr.fullName && defaultAddr.addressLine1) {
+          const rawPhone = (defaultAddr.phone || parsedStore.state?.profile?.phone || "").replace(/[^0-9]/g, "");
+          reset({
+            fullName: defaultAddr.fullName || parsedStore.state?.profile?.name || "",
+            mobile: rawPhone.length > 10 ? rawPhone.slice(-10) : rawPhone,
+            addressLine1: defaultAddr.addressLine1 || "",
+            addressLine2: defaultAddr.addressLine2 || "",
+            city: defaultAddr.city || "",
+            state: defaultAddr.state || "",
+            pinCode: defaultAddr.pinCode || "",
+          });
+          setHasLoadedSavedAddress(true);
+          return;
+        }
+      }
+
       const saved = localStorage.getItem("pinkfarm_guest_address");
       if (saved) {
         const parsed = JSON.parse(saved);

@@ -7,6 +7,7 @@ import { ShoppingCart, Search, Menu, X, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useSettingsStore } from "@/store/settingsStore";
+import { useCustomerStore } from "@/store/customerStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
@@ -19,6 +20,7 @@ export function Navbar() {
   const announcementText = useSettingsStore((state) => state.announcementText);
   const isAcceptingOrders = useSettingsStore((state) => state.isAcceptingOrders);
   const storeName = useSettingsStore((state) => state.storeName);
+  const customer = useCustomerStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -137,13 +139,19 @@ export function Navbar() {
               </motion.button>
             </Link>
             
-            <Link href="/login" aria-label="Account" className="hidden md:block">
+            <Link 
+              href="/account" 
+              aria-label="Customer Account & Settings" 
+              className="hidden md:block"
+              title="Customer Settings & Profile"
+            >
               <motion.div
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="hover:text-brand-green-light transition-all duration-200"
+                className="relative hover:text-brand-green-light transition-all duration-200"
               >
                 <User size={22} strokeWidth={2.2} />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
               </motion.div>
             </Link>
             
@@ -191,7 +199,10 @@ export function Navbar() {
                 { name: "Shop", path: "/products" },
                 { name: "About Us", path: "/about" },
                 { name: "Contact", path: "/contact" },
-                { name: "Sign In / Register", path: "/login" }
+                { 
+                  name: "Customer Settings & Account", 
+                  path: "/account" 
+                }
               ].map((link) => (
                 <Link 
                   key={link.name} 

@@ -50,6 +50,11 @@ export function CustomerAccountClient() {
 
   const [activeTab, setActiveTab] = useState<AccountTab>("profile");
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Profile Form States
   const [profileName, setProfileName] = useState(customer.profile.name);
@@ -282,6 +287,51 @@ export function CustomerAccountClient() {
     router.push("/login");
   };
 
+  // If client is hydrated and customer is not logged in, show access barrier / login prompt
+  if (mounted && !customer.isLoggedIn) {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center bg-[#faf7f2] px-4 py-12">
+        <div className="bg-white rounded-3xl p-8 md:p-10 shadow-soft max-w-md w-full border border-brand-green/10 text-center animate-fade-in-up">
+          <div className="w-16 h-16 rounded-2xl bg-brand-pink/50 text-brand-green flex items-center justify-center mx-auto mb-4">
+            <User size={32} />
+          </div>
+          <h2 className="font-serif text-2xl font-bold text-brand-green mb-2">Customer Account</h2>
+          <p className="text-sm text-brand-charcoal/70 mb-6">
+            You are currently signed out. Please sign in to manage your profile, saved addresses, delivery preferences, and order history.
+          </p>
+          <div className="space-y-3">
+            <Link
+              href="/login"
+              className="w-full py-3.5 px-4 rounded-xl bg-brand-green text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md hover:bg-brand-green-light transition-all"
+            >
+              Sign In to Your Account →
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                customer.loginCustomer({
+                  name: "Shivani Sharma",
+                  phone: "+91 98765 43210",
+                  email: "shivani.sharma@pinkfarm.in",
+                });
+              }}
+              className="w-full py-3 px-4 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold text-xs flex items-center justify-center gap-2 border border-emerald-200 transition-all cursor-pointer"
+            >
+              <Sparkles size={14} className="text-amber-500" />
+              <span>Direct Demo Login (Shivani Sharma)</span>
+            </button>
+            <Link
+              href="/"
+              className="inline-block text-xs font-semibold text-brand-charcoal/60 hover:text-brand-green pt-2 transition-colors"
+            >
+              ← Return to Store Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#faf7f2] py-8 md:py-12">
       <div className="container mx-auto px-4 max-w-6xl">
@@ -291,17 +341,6 @@ export function CustomerAccountClient() {
           <ChevronRight size={14} />
           <span className="text-brand-green font-bold">My Account & Customer Settings</span>
         </nav>
-
-        {/* Direct Access Indicator */}
-        <div className="mb-6 p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl flex items-center gap-2.5 text-xs text-emerald-900 shadow-2xs">
-          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs shrink-0">
-            ✓
-          </span>
-          <div>
-            <span className="font-bold text-emerald-950">Customer Settings & Account</span>
-            <span className="text-emerald-800/80"> — You have full direct access to customer profile, addresses, delivery preferences, wallet credits, and order history.</span>
-          </div>
-        </div>
 
         {/* Success Notifications */}
         {saveSuccessMsg && (

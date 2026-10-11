@@ -22,7 +22,10 @@ export function Navbar() {
   const storeName = useSettingsStore((state) => state.storeName);
   const customer = useCustomerStore();
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -139,21 +142,34 @@ export function Navbar() {
               </motion.button>
             </Link>
             
-            <Link 
-              href="/account" 
-              aria-label="Customer Account & Settings" 
-              className="hidden md:block"
-              title="Customer Settings & Profile"
-            >
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative hover:text-brand-green-light transition-all duration-200"
-              >
-                <User size={22} strokeWidth={2.2} />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
-              </motion.div>
-            </Link>
+            {(() => {
+              const isLoggedIn = mounted ? customer.isLoggedIn : false;
+              const userHref = isLoggedIn ? "/account" : "/login";
+              const userTitle = isLoggedIn
+                ? customer.profile.name
+                  ? `My Account (${customer.profile.name})`
+                  : "My Account"
+                : "Sign In / Register";
+
+              return (
+                <Link 
+                  href={userHref} 
+                  aria-label={userTitle} 
+                  title={userTitle}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative hover:text-brand-green-light transition-all duration-200"
+                  >
+                    <User size={22} strokeWidth={2.2} />
+                    {isLoggedIn && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
+                    )}
+                  </motion.div>
+                </Link>
+              );
+            })()}
             
             {/* Cart with animated badge */}
             <Link href="/cart" aria-label="Cart">
@@ -200,8 +216,8 @@ export function Navbar() {
                 { name: "About Us", path: "/about" },
                 { name: "Contact", path: "/contact" },
                 { 
-                  name: "Customer Settings & Account", 
-                  path: "/account" 
+                  name: (mounted && customer.isLoggedIn) ? "My Account & Orders" : "Sign In / Register", 
+                  path: (mounted && customer.isLoggedIn) ? "/account" : "/login" 
                 }
               ].map((link) => (
                 <Link 

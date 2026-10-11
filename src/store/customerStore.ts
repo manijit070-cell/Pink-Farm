@@ -101,7 +101,7 @@ const DEFAULT_PREFERENCES: CustomerPreferences = {
 export const useCustomerStore = create<CustomerStoreState>()(
   persist(
     (set, get) => ({
-      isLoggedIn: true, // Default to true for demo customer experience
+      isLoggedIn: false, // Default to false so logged-out state is respected
       profile: DEFAULT_PROFILE,
       addresses: DEFAULT_ADDRESSES,
       preferences: DEFAULT_PREFERENCES,

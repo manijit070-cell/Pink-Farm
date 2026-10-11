@@ -33,6 +33,10 @@ const STATUS_CONFIG: Record<string, { label: string; badgeClass: string }> = {
     label: "✅ Delivered",
     badgeClass: "bg-emerald-50 text-emerald-800 border-emerald-300 focus:ring-emerald-400",
   },
+  CANCELLED: {
+    label: "❌ Cancelled",
+    badgeClass: "bg-red-50 text-red-800 border-red-300 focus:ring-red-400",
+  },
 };
 
 export function FulfillmentStatusSelect({ orderId, initialStatus }: Props) {
@@ -83,6 +87,7 @@ export function FulfillmentStatusSelect({ orderId, initialStatus }: Props) {
         <option value="PACKED">📦 Packaged</option>
         <option value="SHIPPED">🚚 Shipped</option>
         <option value="DELIVERED">✅ Delivered</option>
+        <option value="CANCELLED">❌ Cancelled</option>
       </select>
 
       <div className="absolute right-2.5 pointer-events-none text-xs opacity-60">

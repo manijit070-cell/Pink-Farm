@@ -35,7 +35,8 @@ import {
   Briefcase,
   Gift,
   HelpCircle,
-  X
+  X,
+  XCircle
 } from "lucide-react";
 import { useCustomerStore, CustomerAddress } from "@/store/customerStore";
 import { useCartStore } from "@/store/cartStore";
@@ -82,6 +83,9 @@ export function CustomerAccountClient() {
   const [orders, setOrders] = useState<any[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [reorderSuccessMsg, setReorderSuccessMsg] = useState<string | null>(null);
+  const [cancellingOrder, setCancellingOrder] = useState<any | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelModalError, setCancelModalError] = useState<string | null>(null);
 
   // Referral / Wallet state
   const [copiedReferral, setCopiedReferral] = useState(false);
@@ -90,7 +94,6 @@ export function CustomerAccountClient() {
   const [prefWhatsapp, setPrefWhatsapp] = useState(customer.preferences.whatsappAlerts);
   const [prefSms, setPrefSms] = useState(customer.preferences.smsUpdates);
   const [prefNewsletter, setPrefNewsletter] = useState(customer.preferences.emailNewsletter);
-  const [prefDeliverySlot, setPrefDeliverySlot] = useState(customer.preferences.preferredDeliverySlot);
   const [prefDeliveryNotes, setPrefDeliveryNotes] = useState(customer.preferences.deliveryNotes);
 
   // Synchronize initial state from customer store
@@ -105,7 +108,6 @@ export function CustomerAccountClient() {
     setPrefWhatsapp(customer.preferences.whatsappAlerts);
     setPrefSms(customer.preferences.smsUpdates);
     setPrefNewsletter(customer.preferences.emailNewsletter);
-    setPrefDeliverySlot(customer.preferences.preferredDeliverySlot);
     setPrefDeliveryNotes(customer.preferences.deliveryNotes);
   }, [customer.profile, customer.preferences]);
 
@@ -181,11 +183,42 @@ export function CustomerAccountClient() {
       whatsappAlerts: prefWhatsapp,
       smsUpdates: prefSms,
       emailNewsletter: prefNewsletter,
-      preferredDeliverySlot: prefDeliverySlot,
       deliveryNotes: prefDeliveryNotes,
     });
     setSaveSuccessMsg("Your delivery & notification preferences have been updated!");
     setTimeout(() => setSaveSuccessMsg(null), 3500);
+  };
+
+  const handleConfirmCancelOrder = async () => {
+    if (!cancellingOrder) return;
+    setIsCancelling(true);
+    setCancelModalError(null);
+
+    try {
+      const res = await fetch(`/api/customer/orders/${cancellingOrder.id}/cancel`, {
+        method: "POST",
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === cancellingOrder.id
+              ? { ...o, fulfillmentStatus: "CANCELLED" }
+              : o
+          )
+        );
+        setSaveSuccessMsg(`Order #${cancellingOrder.orderNumber} has been successfully cancelled.`);
+        setCancellingOrder(null);
+        setTimeout(() => setSaveSuccessMsg(null), 4000);
+      } else {
+        setCancelModalError(data.error || "Unable to cancel order");
+      }
+    } catch {
+      setCancelModalError("Network error while trying to cancel order. Please try again.");
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   const handleSaveAddress = (e: React.FormEvent) => {
@@ -977,7 +1010,13 @@ export function CustomerAccountClient() {
                   <div className="space-y-6">
                     {orders.map((order) => {
                       const s = (order.fulfillmentStatus || "PENDING").toUpperCase();
-                      const fulfillment = s === "DELIVERED"
+                      const isCancelled = s === "CANCELLED";
+                      const isShippedOrDelivered = s === "SHIPPED" || s === "OUT_FOR_DELIVERY" || s === "DELIVERED";
+                      const canCancel = s === "PENDING" || s === "PACKED" || s === "PROCESSING";
+
+                      const fulfillment = isCancelled
+                        ? { label: "Cancelled", step: 0, badgeClass: "bg-red-100 text-red-800 border-red-200", icon: "❌" }
+                        : s === "DELIVERED"
                         ? { label: "Delivered", step: 4, badgeClass: "bg-emerald-100 text-emerald-800 border-emerald-200", icon: "✅" }
                         : s === "SHIPPED" || s === "OUT_FOR_DELIVERY"
                         ? { label: "Shipped", step: 3, badgeClass: "bg-purple-100 text-purple-800 border-purple-200", icon: "🚚" }
@@ -1021,56 +1060,67 @@ export function CustomerAccountClient() {
                           </div>
 
                           {/* Live Order Timeline Progress */}
-                          <div className="py-3 px-3.5 my-3 bg-brand-cream/35 rounded-xl border border-brand-green/10">
-                            <div className="flex items-center justify-between text-[11px] font-bold text-brand-charcoal/70 mb-2">
-                              <span className="flex items-center gap-1.5">
-                                <span>Order Progress:</span>
-                                <span className="text-brand-green font-bold">{fulfillment.icon} {fulfillment.label}</span>
+                          {isCancelled ? (
+                            <div className="py-3 px-3.5 my-3 bg-red-50/70 rounded-xl border border-red-200 text-xs text-red-800 flex items-center justify-between">
+                              <span className="font-semibold flex items-center gap-1.5">
+                                <span>❌</span> This order was cancelled and will not be dispatched.
                               </span>
-                              <span className="text-[11px] font-semibold text-brand-charcoal/50">
-                                {fulfillment.step === 4 ? "Delivery Complete" : `Stage ${fulfillment.step} of 4`}
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-red-700 bg-red-100 px-2 py-0.5 rounded">
+                                Cancelled
                               </span>
                             </div>
-                            <div className="grid grid-cols-4 gap-2">
-                              {[
-                                { name: "Pending", step: 1 },
-                                { name: "Packaged", step: 2 },
-                                { name: "Shipped", step: 3 },
-                                { name: "Delivered", step: 4 },
-                              ].map((stage) => {
-                                const isReached = fulfillment.step >= stage.step;
-                                const isCurrent = fulfillment.step === stage.step;
-                                return (
-                                  <div key={stage.name} className="flex flex-col items-center">
-                                    <div
-                                      className={`w-full h-1.5 rounded-full mb-1 transition-all ${
-                                        isReached
-                                          ? stage.step === 4
-                                            ? "bg-emerald-500"
-                                            : stage.step === 3
-                                            ? "bg-purple-500"
-                                            : stage.step === 2
-                                            ? "bg-blue-500"
-                                            : "bg-amber-500"
-                                          : "bg-gray-200"
-                                      }`}
-                                    />
-                                    <span
-                                      className={`text-[10px] font-bold ${
-                                        isCurrent
-                                          ? "text-brand-green"
-                                          : isReached
-                                          ? "text-brand-charcoal/80"
-                                          : "text-brand-charcoal/40"
-                                      }`}
-                                    >
-                                      {stage.name}
-                                    </span>
-                                  </div>
-                                );
-                              })}
+                          ) : (
+                            <div className="py-3 px-3.5 my-3 bg-brand-cream/35 rounded-xl border border-brand-green/10">
+                              <div className="flex items-center justify-between text-[11px] font-bold text-brand-charcoal/70 mb-2">
+                                <span className="flex items-center gap-1.5">
+                                  <span>Order Progress:</span>
+                                  <span className="text-brand-green font-bold">{fulfillment.icon} {fulfillment.label}</span>
+                                </span>
+                                <span className="text-[11px] font-semibold text-brand-charcoal/50">
+                                  {fulfillment.step === 4 ? "Delivery Complete" : `Stage ${fulfillment.step} of 4`}
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-4 gap-2">
+                                {[
+                                  { name: "Pending", step: 1 },
+                                  { name: "Packaged", step: 2 },
+                                  { name: "Shipped", step: 3 },
+                                  { name: "Delivered", step: 4 },
+                                ].map((stage) => {
+                                  const isReached = fulfillment.step >= stage.step;
+                                  const isCurrent = fulfillment.step === stage.step;
+                                  return (
+                                    <div key={stage.name} className="flex flex-col items-center">
+                                      <div
+                                        className={`w-full h-1.5 rounded-full mb-1 transition-all ${
+                                          isReached
+                                            ? stage.step === 4
+                                              ? "bg-emerald-500"
+                                              : stage.step === 3
+                                              ? "bg-purple-500"
+                                              : stage.step === 2
+                                              ? "bg-blue-500"
+                                              : "bg-amber-500"
+                                            : "bg-gray-200"
+                                        }`}
+                                      />
+                                      <span
+                                        className={`text-[10px] font-bold ${
+                                          isCurrent
+                                            ? "text-brand-green"
+                                            : isReached
+                                            ? "text-brand-charcoal/80"
+                                            : "text-brand-charcoal/40"
+                                        }`}
+                                      >
+                                        {stage.name}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
+                          )}
 
                           {/* Ordered items list */}
                           <div className="py-4 space-y-3">
@@ -1114,7 +1164,29 @@ export function CustomerAccountClient() {
                               Delivered to: <span className="font-medium text-brand-charcoal">{order.city}, {order.state}</span>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              {/* Cancel Button / Status Info */}
+                              {canCancel && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setCancelModalError(null);
+                                    setCancellingOrder(order);
+                                  }}
+                                  className="px-3.5 py-1.5 rounded-xl border border-red-200 bg-red-50/60 hover:bg-red-100 text-red-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                                >
+                                  <XCircle size={13} />
+                                  Cancel Order
+                                </button>
+                              )}
+
+                              {isShippedOrDelivered && !isCancelled && s !== "DELIVERED" && (
+                                <span className="text-[11px] font-semibold text-amber-800 bg-amber-50/80 border border-amber-200/80 px-2.5 py-1 rounded-xl inline-flex items-center gap-1">
+                                  <Truck size={12} className="text-amber-600" />
+                                  <span>Courier in transit • Cannot be cancelled</span>
+                                </span>
+                              )}
+
                               <button
                                 type="button"
                                 onClick={() => handleReorder(order)}
@@ -1150,7 +1222,7 @@ export function CustomerAccountClient() {
                     Order Alerts & Delivery Preferences
                   </h2>
                   <p className="text-sm text-brand-charcoal/70 mt-1">
-                    Control how you receive shipment status, tracking PINs, and choose delivery time slots.
+                    Control how you receive shipment status, tracking alerts, discounts, and order updates.
                   </p>
                 </div>
 
@@ -1218,34 +1290,6 @@ export function CustomerAccountClient() {
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-green"></div>
                       </label>
-                    </div>
-                  </div>
-
-                  {/* Preferred Delivery Slot */}
-                  <div className="pt-4 border-t border-brand-green/10 space-y-3">
-                    <label className="text-xs font-bold text-brand-charcoal uppercase tracking-wider block">
-                      Preferred Delivery Window
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      {[
-                        { id: "morning", label: "Morning Slot", time: "8:00 AM – 12:00 PM" },
-                        { id: "evening", label: "Evening Slot", time: "4:00 PM – 8:00 PM" },
-                        { id: "any", label: "Flexible", time: "Anytime during the day" },
-                      ].map((slot) => (
-                        <button
-                          key={slot.id}
-                          type="button"
-                          onClick={() => setPrefDeliverySlot(slot.id as any)}
-                          className={`p-3.5 rounded-xl border text-left transition-all ${
-                            prefDeliverySlot === slot.id
-                              ? "border-brand-green bg-brand-green/5 text-brand-green font-bold shadow-xs"
-                              : "border-brand-green/15 text-brand-charcoal/70 hover:border-brand-green/30"
-                          }`}
-                        >
-                          <div className="text-sm font-bold">{slot.label}</div>
-                          <div className="text-xs text-brand-charcoal/60 mt-0.5">{slot.time}</div>
-                        </button>
-                      ))}
                     </div>
                   </div>
 
@@ -1332,6 +1376,65 @@ export function CustomerAccountClient() {
 
           </div>
         </div>
+
+      {/* CANCEL ORDER CONFIRMATION MODAL */}
+      {cancellingOrder && (
+        <div className="fixed inset-0 z-50 bg-brand-charcoal/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-brand-green/10 animate-fade-in-up">
+            <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4 border border-red-100">
+              <AlertCircle size={28} />
+            </div>
+
+            <h3 className="font-serif text-xl font-bold text-brand-green text-center mb-2">
+              Cancel Order #{cancellingOrder.orderNumber}?
+            </h3>
+
+            <p className="text-sm text-brand-charcoal/70 text-center mb-5 leading-relaxed">
+              Are you sure you want to cancel this order?
+              <br />
+              <span className="text-xs text-amber-800 bg-amber-50 border border-amber-200/80 rounded-lg px-2.5 py-1.5 inline-block mt-2">
+                ⚠️ Notice: Orders can only be cancelled while in packaging. Once dispatched via courier, cancellations cannot be accepted.
+              </span>
+            </p>
+
+            {cancelModalError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium">
+                {cancelModalError}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                disabled={isCancelling}
+                onClick={() => {
+                  setCancellingOrder(null);
+                  setCancelModalError(null);
+                }}
+                className="py-3 px-4 rounded-xl border border-brand-green/20 hover:bg-brand-green/5 text-brand-charcoal font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Keep Order
+              </button>
+
+              <button
+                type="button"
+                disabled={isCancelling}
+                onClick={handleConfirmCancelOrder}
+                className="py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+              >
+                {isCancelling ? (
+                  <span>Cancelling...</span>
+                ) : (
+                  <>
+                    <XCircle size={14} />
+                    <span>Yes, Cancel</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       </div>
     </div>

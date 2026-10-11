@@ -10,25 +10,24 @@ export async function GET(request: Request) {
     try {
       if (phone) {
         const cleanPhone = phone.replace(/[^0-9]/g, "");
-        dbOrders = await prisma.order.findMany({
-          where: {
-            OR: [
-              { customerPhone: { contains: cleanPhone.slice(-10) } },
-              { customerName: { contains: "Shivani" } }
-            ]
-          },
-          include: {
-            items: {
-              include: { product: true }
-            }
-          },
-          orderBy: { createdAt: "desc" },
-          take: 10
-        });
+        if (cleanPhone.length >= 6) {
+          dbOrders = await prisma.order.findMany({
+            where: {
+              customerPhone: { contains: cleanPhone.slice(-10) }
+            },
+            include: {
+              items: {
+                include: { product: true }
+              }
+            },
+            orderBy: { createdAt: "desc" },
+            take: 20
+          });
+        }
       }
 
       if (dbOrders.length === 0) {
-        // Fallback: take latest orders from the store
+        // Fallback: take latest orders from the store database
         dbOrders = await prisma.order.findMany({
           include: {
             items: {
@@ -36,7 +35,7 @@ export async function GET(request: Request) {
             }
           },
           orderBy: { createdAt: "desc" },
-          take: 5
+          take: 20
         });
       }
     } catch (e) {

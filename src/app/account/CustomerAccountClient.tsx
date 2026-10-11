@@ -937,30 +937,29 @@ export function CustomerAccountClient() {
                 ) : (
                   <div className="space-y-6">
                     {orders.map((order) => {
-                      const isDelivered = order.fulfillmentStatus === "DELIVERED";
-                      const isOutForDelivery = order.fulfillmentStatus === "OUT_FOR_DELIVERY";
+                      const s = (order.fulfillmentStatus || "PENDING").toUpperCase();
+                      const fulfillment = s === "DELIVERED"
+                        ? { label: "Delivered", step: 4, badgeClass: "bg-emerald-100 text-emerald-800 border-emerald-200", icon: "✅" }
+                        : s === "SHIPPED" || s === "OUT_FOR_DELIVERY"
+                        ? { label: "Shipped", step: 3, badgeClass: "bg-purple-100 text-purple-800 border-purple-200", icon: "🚚" }
+                        : s === "PACKED" || s === "PROCESSING"
+                        ? { label: "Packaged", step: 2, badgeClass: "bg-blue-100 text-blue-800 border-blue-200", icon: "📦" }
+                        : { label: "Pending", step: 1, badgeClass: "bg-amber-100 text-amber-800 border-amber-200", icon: "⏳" };
 
                       return (
                         <div
                           key={order.id}
                           className="border border-brand-green/15 rounded-2xl p-5 hover:border-brand-green/40 transition-colors"
                         >
-                          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-brand-green/10">
+                          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-brand-green/10">
                             <div>
                               <div className="flex items-center gap-2">
                                 <span className="font-bold text-brand-green text-base">#{order.orderNumber}</span>
                                 <span
-                                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                    isDelivered
-                                      ? "bg-emerald-100 text-emerald-800"
-                                      : isOutForDelivery
-                                      ? "bg-amber-100 text-amber-800"
-                                      : "bg-blue-100 text-blue-800"
-                                  }`}
+                                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${fulfillment.badgeClass}`}
                                 >
-                                  {isDelivered && <CheckCircle2 size={12} />}
-                                  {isOutForDelivery && <Truck size={12} />}
-                                  {order.fulfillmentStatus.replace(/_/g, " ")}
+                                  <span>{fulfillment.icon}</span>
+                                  <span>{fulfillment.label}</span>
                                 </span>
                               </div>
                               <p className="text-xs text-brand-charcoal/60 mt-1">
@@ -979,6 +978,58 @@ export function CustomerAccountClient() {
                               <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
                                 {order.paymentStatus}
                               </span>
+                            </div>
+                          </div>
+
+                          {/* Live Order Timeline Progress */}
+                          <div className="py-3 px-3.5 my-3 bg-brand-cream/35 rounded-xl border border-brand-green/10">
+                            <div className="flex items-center justify-between text-[11px] font-bold text-brand-charcoal/70 mb-2">
+                              <span className="flex items-center gap-1.5">
+                                <span>Order Progress:</span>
+                                <span className="text-brand-green font-bold">{fulfillment.icon} {fulfillment.label}</span>
+                              </span>
+                              <span className="text-[11px] font-semibold text-brand-charcoal/50">
+                                {fulfillment.step === 4 ? "Delivery Complete" : `Stage ${fulfillment.step} of 4`}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-4 gap-2">
+                              {[
+                                { name: "Pending", step: 1 },
+                                { name: "Packaged", step: 2 },
+                                { name: "Shipped", step: 3 },
+                                { name: "Delivered", step: 4 },
+                              ].map((stage) => {
+                                const isReached = fulfillment.step >= stage.step;
+                                const isCurrent = fulfillment.step === stage.step;
+                                return (
+                                  <div key={stage.name} className="flex flex-col items-center">
+                                    <div
+                                      className={`w-full h-1.5 rounded-full mb-1 transition-all ${
+                                        isReached
+                                          ? stage.step === 4
+                                            ? "bg-emerald-500"
+                                            : stage.step === 3
+                                            ? "bg-purple-500"
+                                            : stage.step === 2
+                                            ? "bg-blue-500"
+                                            : "bg-amber-500"
+                                          : "bg-gray-200"
+                                      }`}
+                                    />
+                                    <span
+                                      className={`text-[10px] font-bold ${
+                                        isCurrent
+                                          ? "text-brand-green"
+                                          : isReached
+                                          ? "text-brand-charcoal/80"
+                                          : "text-brand-charcoal/40"
+                                      }`}
+                                    >
+                                      {stage.name}
+                                    </span>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
 

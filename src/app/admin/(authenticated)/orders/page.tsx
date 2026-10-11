@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { ShoppingBag, ArrowUpRight, Clock, CheckCircle, Printer } from "lucide-react";
 import Link from "next/link";
+import { FulfillmentStatusSelect } from "./FulfillmentStatusSelect";
 
 export const instant = false;
 
@@ -67,9 +68,10 @@ export default async function AdminOrdersPage() {
                     </span>
                   </td>
                   <td className="py-4 px-6">
-                    <span className="text-xs font-semibold text-gray-700 bg-gray-100 px-2.5 py-1 rounded-md">
-                      {order.fulfillmentStatus}
-                    </span>
+                    <FulfillmentStatusSelect 
+                      orderId={order.id} 
+                      initialStatus={order.fulfillmentStatus} 
+                    />
                   </td>
                   <td className="py-4 px-6 text-right font-bold text-gray-900">
                     ₹{(order.totalAmount / 100).toFixed(2)}
